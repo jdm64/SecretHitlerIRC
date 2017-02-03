@@ -59,8 +59,34 @@ class Game {
         }
 
         Collections.shuffle(players)
-        players.eachWithIndex { it, index ->
-            println "${index + 1}: $it is ${roles.get(it)}"
+        messageGroup("Turn order: $players")
+        players.eachWithIndex { player, index ->
+            if (roles[player] == Role.LIBERAL) {
+                messagePlayer(player, "You are a ${roles.get(player)}")
+            } else if (roles[player] == Role.FASCIST) {
+                def others = []
+                def hitler
+                players.each { other ->
+                    if (other != player && roles[other] == Role.FASCIST) {
+                        others << other
+                    } else if (roles[other] == Role.HITLER) {
+                        hitler = other
+                    }
+                }
+                messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are $others, Hitler is $hitler")
+            } else if (roles[player] == Role.HITLER) {
+                if (players.size() < 7) {
+                    def otherFac
+                    players.each { other ->
+                        if (other != player && roles[other] == Role.FASCIST) {
+                            otherFac = other
+                        }
+                    }
+                    messagePlayer(player, "You are HITLER, the other fascist is $otherFac")
+                } else {
+                    messagePlayer(player, "You are HITLER")
+                }
+            }
         }
 
         return true
@@ -118,11 +144,11 @@ class Game {
 
     }
 
-    def groupMessage(message) {
+    def messageGroup(message) {
         println message
     }
 
-    def privateMessage(name, message) {
+    def messagePlayer(name, message) {
         println "$name: $message"
     }
 }

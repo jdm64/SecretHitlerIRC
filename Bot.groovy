@@ -13,7 +13,6 @@ class Bot extends ListenerAdapter {
     static PircBotX bot
 
     public void onGenericMessage(GenericMessageEvent event) {
-        //event.user.send().message(event.message)
         event.respondPrivateMessage(event.message)
         event.respondWith(event.message)
         bot.send().message("#test", "Hello There")
