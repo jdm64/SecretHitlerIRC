@@ -98,11 +98,12 @@ class Game {
         messageGroup("About to begin, here is the turn order: $players")
         while (true) {
             playRound()
+            messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
             if (libEnacted == 5) {
-                println "LIBS WIN"
+                messageGroup "Liberals win by enacting 5 liberal policies"
                 return
             } else if (facEnacted == 6) {
-                println "FACS WIN"
+                messageGroup "Fascists win by enacting 6 fascist policies"
                 return
             }
         }
@@ -112,11 +113,42 @@ class Game {
         def president = players[currentPresident]
         messageGroup("Waiting for president $president to nominate a chancellor")
         def chancellor = questionUser(president, "Who is your nominee fo chancellor?")
-        while (!players.contains(chancellor)) {
-            messagePlayer(president,  "Chancellor $chancellor doesn't exist, try again")
+        while (!players.contains(chancellor) || president == chancellor) {
+            messagePlayer(president,  "Chancellor $chancellor doesn't exist (or you picked yourself), try again")
             chancellor = questionUser(president, "Who is your nominee fo chancellor?")
         }
+        if (electGovernment(president, chancellor)) {
+            messageGroup("The election passes")
+            def policies = drawPolicies()
+            def discard = questionUser(president, "Choose a policy to discard from $policies [1,2,3]") as int
+            discardPolicy(policies.removeAt(discard - 1))
+            discard = questionUser(chancellor, "Choose a policy to discard from $policies [1,2]") as int
+            discardPolicy(policies.removeAt(discard - 1))
+            enactPolicy(policies[0])
+        } else {
+            messageGroup("The election fails")
+        }
         currentPresident++
+    }
+
+    def electGovernment(president, chancellor) {
+        return 1
+        //def elected = 0
+        //messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
+        //def votingRecord = [:]
+        //players.each { player ->
+        //    def response = questionUser(player, "How do you feel about the proposed government? [Ja, Nein]? ")
+        //    response = response.toLowerCase()
+        //    if (response == "j" || response == "ja" || response == "y" || response == "yes") {
+        //        elected++
+        //        votingRecord << [(player): "Ja"]
+        //    } else {
+        //        elected--
+        //        votingRecord << [(player): "Nein"]
+        //    }
+        //}
+        //messageGroup("The results are: $votingRecord")
+        //return elected > 0
     }
 
     def drawPolicies() {
@@ -132,6 +164,7 @@ class Game {
 
     // Returns true if the game is over
     def enactPolicy(policy) {
+        messageGroup("A $policy policy was enacted")
         if (policy.type == Policy.Type.LIBERAL) {
             libEnacted++
         } else if (policy.type == Policy.Type.FASCIST) {
