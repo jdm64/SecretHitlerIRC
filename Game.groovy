@@ -7,6 +7,7 @@ class Game {
     List players
     List drawPile
     List discardPile
+    int currentPresident
     int libEnacted
     int facEnacted
 
@@ -59,7 +60,6 @@ class Game {
         }
 
         Collections.shuffle(players)
-        messageGroup("Turn order: $players")
         players.eachWithIndex { player, index ->
             if (roles[player] == Role.LIBERAL) {
                 messagePlayer(player, "You are a ${roles.get(player)}")
@@ -89,7 +89,34 @@ class Game {
             }
         }
 
+        beginPlay()
+
         return true
+    }
+
+    def beginPlay() {
+        messageGroup("About to begin, here is the turn order: $players")
+        while (true) {
+            playRound()
+            if (libEnacted == 5) {
+                println "LIBS WIN"
+                return
+            } else if (facEnacted == 6) {
+                println "FACS WIN"
+                return
+            }
+        }
+    }
+
+    def playRound() {
+        def president = players[currentPresident]
+        messageGroup("Waiting for president $president to nominate a chancellor")
+        def chancellor = questionUser(president, "Who is your nominee fo chancellor?")
+        while (!players.contains(chancellor)) {
+            messagePlayer(president,  "Chancellor $chancellor doesn't exist, try again")
+            chancellor = questionUser(president, "Who is your nominee fo chancellor?")
+        }
+        currentPresident++
     }
 
     def drawPolicies() {
@@ -105,28 +132,18 @@ class Game {
 
     // Returns true if the game is over
     def enactPolicy(policy) {
-        println "Enacting $policy"
         if (policy.type == Policy.Type.LIBERAL) {
             libEnacted++
         } else if (policy.type == Policy.Type.FASCIST) {
             facEnacted++
             specialAction()
         }
-        if (libEnacted == 5) {
-            println "LIBS WIN"
-            return true
-        } else if (facEnacted == 6) {
-            println "FACS WIN"
-            return true
-        }
-        return false
     }
 
     def reshuffle() {
         drawPile.addAll(discardPile)
         discardPile.clear()
         Collections.shuffle(drawPile)
-        println "RESHUFFLE ${drawPile}"
     }
 
     def specialAction() {
@@ -150,5 +167,10 @@ class Game {
 
     def messagePlayer(name, message) {
         println "$name: $message"
+    }
+
+    def questionUser(name, question) {
+        messagePlayer(name, question)
+        return System.console().readLine("What is your response? ")
     }
 }
