@@ -8,6 +8,7 @@ class Game {
     int numPlayers
     List drawPile
     List discardPile
+    List lastElected = []
     int currentPresident
     int libEnacted
     int facEnacted
@@ -128,12 +129,13 @@ class Game {
     def presidentStart(president) {
         messageGroup("\nWaiting for president $president to nominate a chancellor")
         def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
-        while (!players.contains(chancellor) || president == chancellor) {
-            messagePlayer(president,  "Chancellor $chancellor doesn't exist (or you picked yourself), try again")
+        while (!players.contains(chancellor) || president == chancellor || lastElected.contains(chancellor)) {
+            messagePlayer(president,  "Chancellor $chancellor doesn't exist (or is not eligible), try again")
             chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
         }
         messageGroup("President $president, nominates Chancellor $chancellor.")
         if (electGovernment(president, chancellor)) {
+            lastElected = [president, chancellor]
             failedElection = 0
             messageGroup("The election passes")
             if (facEnacted >= 3 && roles.get(chancellor) == Role.HITLER) {
@@ -166,6 +168,7 @@ class Game {
                 failedElection = 0
             }
         }
+        return false
     }
 
     def electGovernment(president, chancellor) {
@@ -290,7 +293,13 @@ class Game {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
         }
         messageGroup("President $president nominates $response to be the next president.")
-        return presidentStart(response)
+        def backupLastElected = lastElected
+        lastElected = []
+        def result = presidentStart(response)
+        if (lastElected.isEmpty()) {
+            lastElected = backupLastElected
+        }
+        return result
     }
     
     def execute(president) {
