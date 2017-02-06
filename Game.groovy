@@ -99,8 +99,9 @@ class Game {
     def beginPlay() {
         messageGroup("About to begin, here is the turn order: $players")
         while (true) {
-            playRound()
-            messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+            if (playRound()) {
+                return
+            }
             if (libEnacted == 5) {
                 messageGroup "Liberals win by enacting 5 liberal policies"
                 return
@@ -111,17 +112,21 @@ class Game {
         }
     }
 
+    // Return true if the game is over
     def playRound() {
         def president = players[currentPresident]
-        presidentStart(president)
+        if (presidentStart(president)) {
+            return true
+        }
         currentPresident++
         if (currentPresident >= players.size()) {
             currentPresident = 0
         }
+        return false
     }
     
     def presidentStart(president) {
-        messageGroup("Waiting for president $president to nominate a chancellor")
+        messageGroup("\nWaiting for president $president to nominate a chancellor")
         def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
         while (!players.contains(chancellor) || president == chancellor) {
             messagePlayer(president,  "Chancellor $chancellor doesn't exist (or you picked yourself), try again")
@@ -130,12 +135,18 @@ class Game {
         messageGroup("President $president, nominates Chancellor $chancellor.")
         if (electGovernment(president, chancellor)) {
             messageGroup("The election passes")
+            if (facEnacted >= 3 && roles.get(chancellor) == Role.HITLER) {
+                messageGroup("The fascists win! Hitler has been elected chancellor.")
+                return true
+            }
             def policies = drawPolicies()
             def discard = questionPlayer(president, "Choose a policy to discard from $policies [1,2,3]") as int
             discardPolicy(policies.removeAt(discard - 1))
-            discard = questionPlayer(chancellor, "Choose a policy to discard from $policies [1,2]") as int
+            discard = questionPlayer(chancellor, "Choose a policy to discard (the other will be enacted) from $policies [1,2]") as int
             discardPolicy(policies.removeAt(discard - 1))
-            enactPolicy(president, chancellor, policies[0])
+            if (enactPolicy(president, chancellor, policies[0])) {
+                return true
+            }
         } else {
             messageGroup("The election fails")
             // Need to advance failed election marker
@@ -179,10 +190,15 @@ class Game {
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy.type == Policy.Type.LIBERAL) {
             libEnacted++
+            messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
         } else if (policy.type == Policy.Type.FASCIST) {
             facEnacted++
-            specialAction(president)
+            messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+            if (specialAction(president)) {
+                return true
+            }
         }
+        return false
     }
 
     def reshuffle() {
@@ -194,7 +210,9 @@ class Game {
 
     def specialAction(president) {
         if (facEnacted == 4 || facEnacted == 5) {
-            execute(president)
+            if (execute(president)) {
+                return true
+            }
         }
         switch (numPlayers) {
             case 5:
@@ -208,7 +226,7 @@ class Game {
                 if (facEnacted == 2) {
                     inspect(president)
                 } else if (facEnacted == 3) {
-                    specialElection(president)
+                    return specialElection(president)
                 }
                 break
             case 9:
@@ -216,11 +234,12 @@ class Game {
                 if (facEnacted == 1 || facEnacted == 2) {
                     inspect(president)
                 } else if (facEnacted == 3) {
-                    specialElection(president)
+                    return specialElection(president)
                 }
                 break
                 break
         }
+        return false
     }
 
     def peek(president) {
@@ -256,7 +275,7 @@ class Game {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
         }
         messageGroup("President $president nominates $response to be the next president.")
-        presidentStart(response)
+        return presidentStart(response)
     }
     
     def execute(president) {
@@ -267,7 +286,12 @@ class Game {
         }
         players.remove(response)
         messageGroup("$response is dead")
+        if (roles.get(response) == Role.HITLER) {
+            messageGroup("Hitler has been executed. Liberals win!")
+            return true
+        }
         currentPresident = players.indexOf(president)
+        return false
     }
 
     def messageGroup(message) {
