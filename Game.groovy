@@ -11,7 +11,7 @@ class Game {
     int currentPresident
     int libEnacted
     int facEnacted
-
+    int failedElection
 
     def createGame() {
         drawPile = []
@@ -134,6 +134,7 @@ class Game {
         }
         messageGroup("President $president, nominates Chancellor $chancellor.")
         if (electGovernment(president, chancellor)) {
+            failedElection = 0
             messageGroup("The election passes")
             if (facEnacted >= 3 && roles.get(chancellor) == Role.HITLER) {
                 messageGroup("The fascists win! Hitler has been elected chancellor.")
@@ -148,8 +149,22 @@ class Game {
                 return true
             }
         } else {
-            messageGroup("The election fails")
-            // Need to advance failed election marker
+            failedElection++
+            if (failedElection < 3) {
+                messageGroup("The election fails, the failed election marker is now at $failedElection")
+            } else {
+                // Top Card!
+                def policy = drawPile.pop()
+                messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
+                messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
+                if (policy.type == Policy.Type.LIBERAL) {
+                    libEnacted++
+                } else if (policy.type == Policy.Type.FASCIST) {
+                    facEnacted++
+                }
+                messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+                failedElection = 0
+            }
         }
     }
 
