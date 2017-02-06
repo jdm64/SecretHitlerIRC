@@ -113,6 +113,14 @@ class Game {
 
     def playRound() {
         def president = players[currentPresident]
+        presidentStart(president)
+        currentPresident++
+        if (currentPresident >= players.size()) {
+            currentPresident = 0
+        }
+    }
+    
+    def presidentStart(president) {
         messageGroup("Waiting for president $president to nominate a chancellor")
         def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
         while (!players.contains(chancellor) || president == chancellor) {
@@ -131,10 +139,6 @@ class Game {
         } else {
             messageGroup("The election fails")
             // Need to advance failed election marker
-        }
-        currentPresident++
-        if (currentPresident >= players.size()) {
-            currentPresident = 0
         }
     }
 
@@ -172,6 +176,7 @@ class Game {
     // Returns true if the game is over
     def enactPolicy(president, chancellor, policy) {
         messageGroup("President $president and Chancellor $chancellor enacted a $policy policy.")
+        messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy.type == Policy.Type.LIBERAL) {
             libEnacted++
         } else if (policy.type == Policy.Type.FASCIST) {
@@ -181,6 +186,7 @@ class Game {
     }
 
     def reshuffle() {
+        messageGroup("Reshuffling the deck")
         drawPile.addAll(discardPile)
         discardPile.clear()
         Collections.shuffle(drawPile)
@@ -202,7 +208,7 @@ class Game {
                 if (facEnacted == 2) {
                     inspect(president)
                 } else if (facEnacted == 3) {
-                    // Special election
+                    specialElection(president)
                 }
                 break
             case 9:
@@ -210,7 +216,7 @@ class Game {
                 if (facEnacted == 1 || facEnacted == 2) {
                     inspect(president)
                 } else if (facEnacted == 3) {
-                    // Special election
+                    specialElection(president)
                 }
                 break
                 break
@@ -218,6 +224,9 @@ class Game {
     }
 
     def peek(president) {
+        if (drawPile.size() < 3) {
+            reshuffle()
+        }
         // President to peek
         def size = drawPile.size()
         // Pop, pops from the back so...
@@ -226,16 +235,28 @@ class Game {
     }
 
     def inspect(president) {
+        messageGroup("Waiting for President $president to decide whom to inspect.")
         def response = questionPlayer(president, "Whom do you wish to inspect?")
         while (!players.contains(response)) {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
         }
+        messageGroup("President $president to inspect the party membership of $response")
         def role = roles.get(response)
         if (role == Role.LIBERAL) {
             messagePlayer(president, "$response is a liberal")
         } else {
             messagePlayer(president, "$response is a fascist")
         }
+    }
+
+    def specialElection(president) {
+        messageGroup("Waiting for President $president to nominate the next president.")
+        def response = questionPlayer(president, "Whom do you wish to nominate as the next president?")
+        while (!players.contains(response)) {
+            response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
+        }
+        messageGroup("President $president nominates $response to be the next president.")
+        presidentStart(response)
     }
     
     def execute(president) {
