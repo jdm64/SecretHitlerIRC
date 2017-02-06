@@ -187,33 +187,30 @@ class Game {
     }
 
     def specialAction(president) {
+        if (facEnacted == 4 || facEnacted == 5) {
+            execute(president)
+        }
         switch (numPlayers) {
             case 5:
             case 6:
                 if (facEnacted == 3) {
                     peek(president)
-                } else if (facEnacted > 3) {
-                    execute(president)
                 }
                 break
             case 7:
             case 8:
                 if (facEnacted == 2) {
-                    // President to inspect
+                    inspect(president)
                 } else if (facEnacted == 3) {
                     // Special election
-                } else if (facEnacted > 3) {
-                    // Execute
                 }
                 break
             case 9:
             case 10:
                 if (facEnacted == 1 || facEnacted == 2) {
-                    // President to inspect
+                    inspect(president)
                 } else if (facEnacted == 3) {
                     // Special election
-                } else if (facEnacted > 3) {
-                    // Execute
                 }
                 break
                 break
@@ -226,6 +223,19 @@ class Game {
         // Pop, pops from the back so...
         def next = [drawPile[size - 1], drawPile[size - 2], drawPile[size -3]]
         messagePlayer(president, "The next three policies in the draw pile are: $next")
+    }
+
+    def inspect(president) {
+        def response = questionPlayer(president, "Whom do you wish to inspect?")
+        while (!players.contains(response)) {
+            response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
+        }
+        def role = roles.get(response)
+        if (role == Role.LIBERAL) {
+            messagePlayer(president, "$response is a liberal")
+        } else {
+            messagePlayer(president, "$response is a fascist")
+        }
     }
     
     def execute(president) {
