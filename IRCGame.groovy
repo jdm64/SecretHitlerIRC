@@ -7,6 +7,7 @@ import org.pircbotx.*
 import org.pircbotx.hooks.*
 import org.pircbotx.hooks.events.*
 import org.pircbotx.hooks.types.*
+import java.util.concurrent.*
 
 
 class IRCGame extends Game {
@@ -16,6 +17,8 @@ class IRCGame extends Game {
     def listener = new IRCListener()
 
     class IRCListener extends ListenerAdapter {
+        def lastMessage = new ConcurrentHashMap()
+
         public void onMessage(MessageEvent event) {
             if (event.message.startsWith(botName + ":")) {
                 def command = event.message - "$botName:"
@@ -23,6 +26,7 @@ class IRCGame extends Game {
                     case "start":
                         def users = event.channel.usersNicks
                         //startGame(users - botName)
+                        createGame()
                         startGame(["one", "two", "three", "four", "five"])
                         break;
                 }
@@ -30,7 +34,18 @@ class IRCGame extends Game {
         }
 
         public void onPrivateMessage(PrivateMessageEvent event) {
-            println "Private message $event.message"
+            lastMessage << [(event.user.getNick()): event.message]
+        }
+
+        def clearLastMessage(name) {
+            lastMessage.remove(name)
+        }
+
+        def nextMessageFrom(name) {
+            while (!lastMessage.containsKey(name)) {
+                Thread.currentThread().sleep(500)
+            }
+            return lastMessage.remove(name)
         }
     
     }
@@ -58,8 +73,10 @@ class IRCGame extends Game {
     }
 
     def questionPlayer(name, question) {
-        //messagePlayer(name, question)
-        bot.send().notice("daniel", "$name: $message")
-        return System.console().readLine("What is your response? ")
+        println "Questioning $name, $question"
+        listener.clearLastMessage(name)
+        messagePlayer(name, question)
+        //return listener.nextMessageFrom(name)
+        return listener.nextMessageFrom("daniel")
     }
 }
