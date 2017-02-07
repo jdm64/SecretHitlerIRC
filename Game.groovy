@@ -30,11 +30,11 @@ class Game {
 
     def startGame(names) {
         if (names.size() < 5) {
-            groupMessage("Not enough players")
+            messageGroup("Not enough players to start, need at least 5.")
             return false
         }
         if (names.size() > 10) {
-            groupMessage("Too many players")
+            messageGroup("Too many players to start, maximum is 10.")
             return false
         }
 
@@ -76,7 +76,12 @@ class Game {
                         hitler = other
                     }
                 }
-                messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are $others, Hitler is $hitler")
+                if (others.isEmpty()) {
+                    messagePlayer(player, "You are a ${roles[player]}, Hitler is $hitler")
+                } else {
+                    messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are $others, Hitler is $hitler")
+                }
+
             } else if (roles[player] == Role.HITLER) {
                 if (players.size() < 7) {
                     def otherFac
@@ -135,7 +140,11 @@ class Game {
         }
         messageGroup("President $president, nominates Chancellor $chancellor.")
         if (electGovernment(president, chancellor)) {
-            lastElected = [president, chancellor]
+            if (players.size() < 6) {
+                lastElected = [chancellor]
+            } else {
+                lastElected = [president, chancellor]
+            }
             failedElection = 0
             messageGroup("The election passes")
             if (facEnacted >= 3 && roles.get(chancellor) == Role.HITLER) {

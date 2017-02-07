@@ -1,8 +1,9 @@
 //Bot.startBot()
 
-g = new Game()
-g.createGame()
-if(g.startGame(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"])) {
+//g = new Game()
+g = new IRCGame()
+//g.createGame()
+//if(g.startGame(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"])) {
 //if(g.startGame(["one", "two", "three", "four", "five", "six", "seven"])) {
 //if(g.startGame(["one", "two", "three", "four", "five"])) {
 
@@ -28,4 +29,4 @@ if(g.startGame(["one", "two", "three", "four", "five", "six", "seven", "eight", 
 //    println g.drawPile
 
 
-}
+//}
