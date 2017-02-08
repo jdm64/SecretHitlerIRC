@@ -55,7 +55,6 @@ class IRCGame extends Game {
     }
 
     def IRCGame() {
-        println debug
         def config = new Configuration.Builder()
             .setName(botName)
             .addServer("skynet.parasoft.com")
@@ -140,9 +139,9 @@ class IRCGame extends Game {
         listener.clearLastMessage(name)
         messagePlayer(name, question)
         if (debug) {
-            return listener.nextMessageFrom(name)
-        } else {
             return listener.nextMessageFrom("daniel")
+        } else {
+            return listener.nextMessageFrom(name)
         }
     }
 }

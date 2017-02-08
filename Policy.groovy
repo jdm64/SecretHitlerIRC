@@ -1,3 +1,4 @@
+import org.pircbotx.Colors
 
 class Policy {
     enum Type { LIBERAL, FASCIST }
@@ -6,6 +7,10 @@ class Policy {
     boolean played
 
     String toString() {
-        return type
+        def color = Colors.RED
+        if (type == Type.LIBERAL) {
+            color = Colors.BLUE
+        }
+        return color + type + Colors.NORMAL
     }
 }
