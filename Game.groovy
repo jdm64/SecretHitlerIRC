@@ -1,6 +1,24 @@
+// https://mvnrepository.com/artifact/org.pircbotx/pircbotx
+@Grab(group='org.pircbotx', module='pircbotx', version='2.1')
+
+import org.pircbotx.Colors
 
 class Game {
-    enum Role { LIBERAL, FASCIST, HITLER }
+    enum Role { 
+        LIBERAL (Colors.BLUE),
+        FASCIST (Colors.RED),
+        HITLER (Colors.RED)
+
+        def color
+
+        Role(color) {
+            this.color = color
+        }
+    
+        public String toString() {
+            return color + super.toString() + Colors.NORMAL
+        }
+    }
 
     Map roles
     List players
@@ -89,9 +107,9 @@ class Game {
                             otherFac = other
                         }
                     }
-                    messagePlayer(player, "You are HITLER, the other fascist is $otherFac")
+                    messagePlayer(player, "You are ${roles[player]}, the other fascist is $otherFac")
                 } else {
-                    messagePlayer(player, "You are HITLER")
+                    messagePlayer(player, "You are ${roles[player]}")
                 }
             }
         }
