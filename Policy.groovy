@@ -3,16 +3,16 @@
 
 import org.pircbotx.Colors
 
-class Policy {
-    enum Type { LIBERAL, FASCIST }
+enum Policy {
+    LIBERAL(Colors.BLUE),
+    FASCIST(Colors.RED)
 
-    Type type
+    def color
+    def Policy(color) {
+        this.color = color
+    }
 
     String toString() {
-        def color = Colors.RED
-        if (type == Type.LIBERAL) {
-            color = Colors.BLUE
-        }
-        return color + type + Colors.NORMAL
+        return color + super.toString() + Colors.NORMAL
     }
 }

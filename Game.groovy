@@ -36,10 +36,10 @@ class Game {
         discardPile = []
         // Fill draw pile
         1.upto(6, {
-            drawPile << new Policy(type: Policy.Type.LIBERAL)
+            drawPile << Policy.LIBERAL
         })
         1.upto(11, {
-            drawPile << new Policy(type: Policy.Type.FASCIST)
+            drawPile << Policy.FASCIST
         })
         Collections.shuffle(drawPile)
 
@@ -194,9 +194,9 @@ class Game {
                 def policy = drawPile.pop()
                 messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
                 messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
-                if (policy.type == Policy.Type.LIBERAL) {
+                if (policy.type == Policy.LIBERAL) {
                     libEnacted++
-                } else if (policy.type == Policy.Type.FASCIST) {
+                } else if (policy.type == Policy.FASCIST) {
                     facEnacted++
                 }
                 messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
@@ -241,10 +241,10 @@ class Game {
     def enactPolicy(president, chancellor, policy) {
         messageGroup("President $president and Chancellor $chancellor enacted a $policy policy.")
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
-        if (policy.type == Policy.Type.LIBERAL) {
+        if (policy == Policy.LIBERAL) {
             libEnacted++
             messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
-        } else if (policy.type == Policy.Type.FASCIST) {
+        } else if (policy == Policy.FASCIST) {
             facEnacted++
             messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
             if (specialAction(president)) {
