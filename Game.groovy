@@ -325,14 +325,21 @@ class Game {
         while (!players.contains(response)) {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to execute. ")
         }
-        players.remove(response)
-        messageGroup("$response is dead")
+        if (kill(response)) {
+            return true
+        }
+        currentPresident = players.indexOf(president)
+        return false
+    }
+
+    def kill(user) {
+        players.remove(user)
+        messageGroup("$user is dead")
         if (roles.get(response) == Role.HITLER) {
             messageGroup("Hitler has been executed. Liberals win!")
             endGame()
             return true
         }
-        currentPresident = players.indexOf(president)
         return false
     }
 

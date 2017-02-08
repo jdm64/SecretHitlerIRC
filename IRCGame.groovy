@@ -11,9 +11,10 @@ import java.util.concurrent.*
 
 
 class IRCGame extends Game {
+    def debug = Boolean.getBoolean("debug")
     def bot
     def botName = "shbot"
-    def channelName = "#test"
+    def channelName = "#sh"
     def channel
     def devoiced
     def listener = new IRCListener()
@@ -54,6 +55,7 @@ class IRCGame extends Game {
     }
 
     def IRCGame() {
+        println debug
         def config = new Configuration.Builder()
             .setName(botName)
             .addServer("skynet.parasoft.com")
@@ -80,7 +82,9 @@ class IRCGame extends Game {
     }
 
     def takeVoice(names) {
-        names << "daniel"
+        if (debug) {
+            names << "daniel"
+        }
         channel.users.each { user ->
             if (names?.contains(user.getNick())) {
                 channel.send().deVoice(user)
@@ -109,8 +113,14 @@ class IRCGame extends Game {
         return elected
     }
 
+    def kill(user) {
+        takeVoice([user])
+        super.kill(user)
+    }
+
     def endGame() {
         super.endGame()
+        giveVoice(null)
         channel.send().setMode("-m")
     }
 
@@ -119,14 +129,20 @@ class IRCGame extends Game {
     }
 
     def messagePlayer(name, message) {
-        //bot.send().message(name, message)
-        bot.send().message("daniel", "$name: $message")
+        if (debug) {
+            bot.send().message("daniel", "$name: $message")
+        } else {
+            bot.send().message(name, message)
+        }
     }
 
     def questionPlayer(name, question) {
         listener.clearLastMessage(name)
         messagePlayer(name, question)
-        //return listener.nextMessageFrom(name)
-        return listener.nextMessageFrom("daniel")
+        if (debug) {
+            return listener.nextMessageFrom(name)
+        } else {
+            return listener.nextMessageFrom("daniel")
+        }
     }
 }
