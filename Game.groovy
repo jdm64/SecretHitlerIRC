@@ -2,7 +2,6 @@
 class Game {
     enum Role { LIBERAL, FASCIST, HITLER }
 
-    String channel
     Map roles
     List players
     int numPlayers
@@ -102,6 +101,8 @@ class Game {
         return true
     }
 
+    def endGame() {}
+
     def beginPlay() {
         messageGroup("About to begin, here is the turn order: $players")
         while (true) {
@@ -110,9 +111,11 @@ class Game {
             }
             if (libEnacted == 5) {
                 messageGroup "Liberals win by enacting 5 liberal policies"
+                endGame()
                 return
             } else if (facEnacted == 6) {
                 messageGroup "Fascists win by enacting 6 fascist policies"
+                endGame()
                 return
             }
         }
@@ -122,14 +125,18 @@ class Game {
     def playRound() {
         def president = players[currentPresident]
         if (presidentStart(president)) {
+            roundEnd()
             return true
         }
         currentPresident++
         if (currentPresident >= players.size()) {
             currentPresident = 0
         }
+        roundEnd()
         return false
     }
+
+    def roundEnd() {}
     
     def presidentStart(president) {
         messageGroup("Waiting for president $president to nominate a chancellor")
@@ -149,6 +156,7 @@ class Game {
             messageGroup("The election passes")
             if (facEnacted >= 3 && roles.get(chancellor) == Role.HITLER) {
                 messageGroup("The fascists win! Hitler has been elected chancellor.")
+                endGame()
                 return true
             }
             def policies = drawPolicies()
@@ -181,7 +189,7 @@ class Game {
     }
 
     def electGovernment(president, chancellor) {
-        return 1
+        return true
         //def elected = 0
         //messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
         //def votingRecord = [:]
@@ -321,6 +329,7 @@ class Game {
         messageGroup("$response is dead")
         if (roles.get(response) == Role.HITLER) {
             messageGroup("Hitler has been executed. Liberals win!")
+            endGame()
             return true
         }
         currentPresident = players.indexOf(president)

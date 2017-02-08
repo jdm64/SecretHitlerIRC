@@ -14,6 +14,8 @@ class IRCGame extends Game {
     def bot
     def botName = "shbot"
     def channelName = "#test"
+    def channel
+    def devoiced
     def listener = new IRCListener()
 
     class IRCListener extends ListenerAdapter {
@@ -24,7 +26,8 @@ class IRCGame extends Game {
                 def command = event.message - "$botName:"
                 switch (command.trim().toLowerCase()) {
                     case "start":
-                        def users = event.channel.usersNicks
+                        channel = event.channel
+                        def users = channel.usersNicks
                         //startGame(users - botName)
                         createGame()
                         startGame(["one", "two", "three", "four", "five"])
@@ -63,8 +66,56 @@ class IRCGame extends Game {
         }
     }
 
+    def giveVoice() {
+        giveVoice(null)
+    }
+    def giveVoice(names) {
+        channel.users.each { user ->
+            if (!user.getNick().equals(botName)) {
+                if (names == null || names.contains(user.getNick())) {
+                    channel.send().voice(user)
+                }
+            }
+        }
+    }
+
+    def takeVoice(names) {
+        names << "daniel"
+        channel.users.each { user ->
+            if (names?.contains(user.getNick())) {
+                channel.send().deVoice(user)
+            }
+        }
+        devoiced = names
+    }
+
+    def startGame(names) {
+        channel.send().setMode("+m")
+        giveVoice()
+        super.startGame(names)
+    }
+    
+    def roundEnd() {
+        if (devoiced) {
+            giveVoice(devoiced)
+        }
+    }
+
+    def electGovernment(president, chancellor) {
+        def elected = super.electGovernment(president, chancellor)
+        if (elected) {
+            takeVoice([president, chancellor])
+        }
+        return elected
+    }
+
+    def endGame() {
+        super.endGame()
+        channel.send().setMode("-m")
+    }
+
     def messageGroup(message) {
-        bot.send().message(channelName, message)
+        channel.send().message(message)
     }
 
     def messagePlayer(name, message) {
@@ -73,7 +124,6 @@ class IRCGame extends Game {
     }
 
     def questionPlayer(name, question) {
-        println "Questioning $name, $question"
         listener.clearLastMessage(name)
         messagePlayer(name, question)
         //return listener.nextMessageFrom(name)
