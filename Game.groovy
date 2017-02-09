@@ -2,6 +2,8 @@
 @Grab(group='org.pircbotx', module='pircbotx', version='2.1')
 
 import org.pircbotx.Colors
+import java.util.concurrent.*
+import java.util.concurrent.atomic.*
 
 class Game {
     enum Role { 
@@ -194,9 +196,9 @@ class Game {
                 def policy = drawPile.pop()
                 messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
                 messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
-                if (policy.type == Policy.LIBERAL) {
+                if (policy == Policy.LIBERAL) {
                     libEnacted++
-                } else if (policy.type == Policy.FASCIST) {
+                } else if (policy == Policy.FASCIST) {
                     facEnacted++
                 }
                 messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
@@ -207,23 +209,32 @@ class Game {
     }
 
     def electGovernment(president, chancellor) {
-        return true
-        //def elected = 0
-        //messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
-        //def votingRecord = [:]
-        //players.each { player ->
-        //    def response = questionPlayer(player, "How do you feel about the proposed government? [Ja, Nein]? ")
-        //    response = response.toLowerCase()
-        //    if (response == "j" || response == "ja" || response == "y" || response == "yes") {
-        //        elected++
-        //        votingRecord << [(player): "Ja"]
-        //    } else {
-        //        elected--
-        //        votingRecord << [(player): "Nein"]
-        //    }
-        //}
-        //messageGroup("The results are: $votingRecord")
-        //return elected > 0
+        def threadPool = Executors.newFixedThreadPool(players.size())
+
+        messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
+        def votingRecord = new ConcurrentHashMap()
+        def elected = new AtomicInteger()
+        def futures = []
+        try {
+            players.each { player ->
+                futures << threadPool.submit({
+                    def response = questionPlayer(player, "How do you feel about the proposed government? [Ja, Nein]? ")
+                    response = response.toLowerCase()
+                    if (response == "j" || response == "ja" || response == "y" || response == "yes") {
+                        elected.getAndIncrement()
+                        votingRecord << [(player): "Ja"]
+                    } else {
+                        elected.getAndDecrement()
+                        votingRecord << [(player): "Nein"]
+                    }
+                } as Callable)
+            }
+        } finally {
+            threadPool.shutdown()
+        }
+        futures.each{it.get()}
+        messageGroup("The results are: $votingRecord")
+        return elected.get() > 0
     }
 
     def drawPolicies() {
