@@ -13,8 +13,8 @@ import java.util.concurrent.*
 class IRCGame extends Game {
     def debug = Boolean.getBoolean("debug")
     def bot
-    def botName = "shbot"
-    def channelName = "#sh"
+    def botName = "shitler"
+    def channelName = "#game"
     def channel
     def devoiced
     def listener = new IRCListener()
@@ -33,7 +33,7 @@ class IRCGame extends Game {
                         if (debug) {
                             startGame(["one", "two", "three", "four", "five"])
                         } else {
-                            startGame(users - botName)
+                            startGame(new ArrayList(users - botName))
                         }
                         break;
                 }

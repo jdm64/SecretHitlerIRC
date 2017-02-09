@@ -209,8 +209,8 @@ class Game {
     }
 
     def electGovernment(president, chancellor) {
-        //def threadPool = Executors.newFixedThreadPool(players.size())
-        def threadPool = Executors.newFixedThreadPool(1)
+        def threadPool = Executors.newFixedThreadPool(players.size())
+        //def threadPool = Executors.newFixedThreadPool(1)
 
         messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
         def votingRecord = new ConcurrentHashMap()
