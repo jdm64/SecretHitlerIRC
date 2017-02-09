@@ -182,34 +182,35 @@ class Game {
             def policies = drawPolicies()
             def discard = questionPlayer(president, "Choose a policy to discard from $policies [1,2,3]") as int
             discardPolicy(policies.removeAt(discard - 1))
-            discard = questionPlayer(chancellor, "Choose a policy to discard (the other will be enacted) from $policies [1,2]") as int
-            discardPolicy(policies.removeAt(discard - 1))
-            if (enactPolicy(president, chancellor, policies[0])) {
-                return true
+            def question = "Choose a policy to discard (the other will be enacted) from $policies [1,2]."
+            if (facEnacted == 5) {
+                question += " Note: choose 0 to propose a veto."
+            }
+            discard = questionPlayer(chancellor, question) as int
+            while (discard == 0 && facEnacted < 5) {
+                messagePlayer(chancellor, "You cannot move to veto until there are 5 fascist policies enacted.")
+                discard = questionPlayer(chancellor, question) as int
+            }
+            if (discard != 0 || !veto(president, chancellor)) {
+                discardPolicy(policies.removeAt(discard - 1))
+                if (enactPolicy(president, chancellor, policies[0])) {
+                    return true
+                }
             }
         } else {
             failedElection++
             if (failedElection < 3) {
                 messageGroup("The election fails, the failed election marker is now at $failedElection")
             } else {
-                // Top Card!
-                def policy = drawPile.pop()
-                messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
-                messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
-                if (policy == Policy.LIBERAL) {
-                    libEnacted++
-                } else if (policy == Policy.FASCIST) {
-                    facEnacted++
-                }
-                messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
-                failedElection = 0
+                topCard()
             }
         }
         return false
     }
 
     def electGovernment(president, chancellor) {
-        def threadPool = Executors.newFixedThreadPool(players.size())
+        //def threadPool = Executors.newFixedThreadPool(players.size())
+        def threadPool = Executors.newFixedThreadPool(1)
 
         messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
         def votingRecord = new ConcurrentHashMap()
@@ -270,6 +271,36 @@ class Game {
         drawPile.addAll(discardPile)
         discardPile.clear()
         Collections.shuffle(drawPile)
+    }
+
+    def veto(president, chancellor) {
+        messageGroup("Chancellor $chancellor moves to veto this agenda.")
+        def result = questionPlayer(president, "Do you agree to a veto of the current agenda? [Y/N]").toLowerCase()
+        if (result == "y" || result == "yes") {
+            messageGroup("President $president agrees to the veto, the policies are discarded and the failed government marker advances")
+            failedElection++
+            messageGroup("The failed election marker is now at $failedElection")
+            if (failedElection == 3) {
+                topCard()
+            }
+            return true
+        } else {
+            messageGroup("President $president disagrees to the veto, the chancellor must enact a policy.")
+            return false
+        }
+    }
+
+    def topCard() {
+        def policy = drawPile.pop()
+        messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
+        messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
+        if (policy == Policy.LIBERAL) {
+            libEnacted++
+        } else if (policy == Policy.FASCIST) {
+            facEnacted++
+        }
+        messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+        failedElection = 0
     }
 
     def specialAction(president) {

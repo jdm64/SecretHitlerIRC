@@ -28,10 +28,13 @@ class IRCGame extends Game {
                 switch (command.trim().toLowerCase()) {
                     case "start":
                         channel = event.channel
-                        def users = channel.usersNicks
-                        //startGame(users - botName)
                         createGame()
-                        startGame(["one", "two", "three", "four", "five"])
+                        def users = channel.usersNicks
+                        if (debug) {
+                            startGame(["one", "two", "three", "four", "five"])
+                        } else {
+                            startGame(users - botName)
+                        }
                         break;
                 }
             }
@@ -105,11 +108,15 @@ class IRCGame extends Game {
     }
 
     def electGovernment(president, chancellor) {
-        def elected = super.electGovernment(president, chancellor)
-        if (elected) {
-            takeVoice([president, chancellor])
+        if (debug) {
+            return true
+        } else {
+            def elected = super.electGovernment(president, chancellor)
+            if (elected) {
+                takeVoice([president, chancellor])
+            }
+            return elected
         }
-        return elected
     }
 
     def kill(user) {
