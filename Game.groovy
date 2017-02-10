@@ -188,6 +188,7 @@ class Game {
     }
     def presidentStart(president) {
         messageGroup("Waiting for president $president to nominate a chancellor")
+        messagePlayer(president, printPlayers())
         def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
         while (!players.contains(chancellor) || president == chancellor || lastElected.contains(chancellor)) {
             messagePlayer(president,  "Chancellor $chancellor doesn't exist (or is not eligible), try again")
