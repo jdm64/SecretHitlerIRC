@@ -6,6 +6,7 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 
 class Game {
+    def debug = Boolean.getBoolean("debug")
     enum Role { 
         LIBERAL (Colors.BLUE),
         FASCIST (Colors.RED),
@@ -158,6 +159,16 @@ class Game {
 
     def roundEnd() {}
     
+    // Checks if the given string value is a number, and in range.
+    def isNumberInRange(value, min, max) {
+        if (value.isNumber()) {
+            def num = value as int
+            if (num >= min && num <= max) {
+                return true
+            }
+        }
+        return false
+    }
     def presidentStart(president) {
         messageGroup("Waiting for president $president to nominate a chancellor")
         def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
@@ -180,17 +191,25 @@ class Game {
                 return true
             }
             def policies = drawPolicies()
-            def discard = questionPlayer(president, "Choose a policy to discard from $policies [1,2,3]") as int
+            def response = questionPlayer(president, "Choose a policy to discard from $policies [1,2,3]")
+            while (!isNumberInRange(response, 1, 3)) {
+                response = questionPlayer(president, "Please choose a number between 1 and 3")
+            }
+            def discard = response as int
             discardPolicy(policies.removeAt(discard - 1))
             def question = "Choose a policy to discard (the other will be enacted) from $policies [1,2]."
             if (facEnacted == 5) {
                 question += " Note: choose 0 to propose a veto."
             }
-            discard = questionPlayer(chancellor, question) as int
-            while (discard == 0 && facEnacted < 5) {
-                messagePlayer(chancellor, "You cannot move to veto until there are 5 fascist policies enacted.")
-                discard = questionPlayer(chancellor, question) as int
+            response = questionPlayer(chancellor, question)
+            def min = 1
+            if (facEnacted == 5) {
+                min = 0
             }
+            while (!isNumberInRange(response, min, 2)) {
+                response = questionPlayer(president, "Please choose a number between $min and 3")
+            }
+            discard = response as int
             if (discard != 0 || !veto(president, chancellor)) {
                 discardPolicy(policies.removeAt(discard - 1))
                 if (enactPolicy(president, chancellor, policies[0])) {
@@ -209,8 +228,15 @@ class Game {
     }
 
     def electGovernment(president, chancellor) {
-        def threadPool = Executors.newFixedThreadPool(players.size())
-        //def threadPool = Executors.newFixedThreadPool(1)
+        if (debug) {
+            return true
+        }
+        def threadPool
+        if (debug) {
+            threadPool = Executors.newFixedThreadPool(1)
+        } else {
+            threadPool = Executors.newFixedThreadPool(players.size())
+        }
 
         messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
         def votingRecord = new ConcurrentHashMap()
@@ -219,7 +245,7 @@ class Game {
         try {
             players.each { player ->
                 futures << threadPool.submit({
-                    def response = questionPlayer(player, "How do you feel about the proposed government? [Ja, Nein]? ")
+                    def response = questionPlayer(player, "Do you approve of a governemnt of $president and $chancellor ? [Ja, Nein]? ")
                     response = response.toLowerCase()
                     if (response == "j" || response == "ja" || response == "y" || response == "yes") {
                         elected.getAndIncrement()
@@ -395,7 +421,7 @@ class Game {
     def kill(user) {
         players.remove(user)
         messageGroup("$user is dead")
-        if (roles.get(response) == Role.HITLER) {
+        if (roles.get(user) == Role.HITLER) {
             messageGroup("Hitler has been executed. Liberals win!")
             endGame()
             return true

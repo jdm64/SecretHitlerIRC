@@ -1,5 +1,8 @@
 
-g = new IRCGame()
-//g = new Game()
-//g.createGame()
-//g.startGame(["one", "two", "three", "four", "five"])
+if (Boolean.getBoolean("console")) {
+    g = new Game()
+    g.createGame()
+    g.startGame(["one", "two", "three", "four", "five"])
+} else {
+    g = new IRCGame()
+}
