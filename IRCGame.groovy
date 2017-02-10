@@ -14,7 +14,7 @@ class IRCGame extends Game {
     def debug = Boolean.getBoolean("debug")
     def bot
     def botName = "shitler"
-    def channelName = "#game"
+    def channelName = "#test"
     def channel
     def devoiced
     def listener = new IRCListener()
@@ -127,7 +127,6 @@ class IRCGame extends Game {
     def endGame() {
         super.endGame()
         giveVoice(null)
-        channel.send().setMode("-m")
     }
 
     def messageGroup(message) {

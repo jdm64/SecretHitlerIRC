@@ -35,6 +35,10 @@ class Game {
     int failedElection
 
     def createGame() {
+        currentPresident = 0
+        libEnacted = 0
+        facEnacted = 0
+        failedElection = 0
         drawPile = []
         discardPile = []
         // Fill draw pile
@@ -45,7 +49,6 @@ class Game {
             drawPile << Policy.FASCIST
         })
         Collections.shuffle(drawPile)
-
     }
 
     def startGame(names) {
@@ -97,9 +100,9 @@ class Game {
                     }
                 }
                 if (others.isEmpty()) {
-                    messagePlayer(player, "You are a ${roles[player]}, Hitler is $hitler")
+                    messagePlayer(player, "You are a ${roles[player]}, Hitler is ${red(hitler)}")
                 } else {
-                    messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are $others, Hitler is $hitler")
+                    messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are ${red(others)}, Hitler is ${red(hitler)}")
                 }
 
             } else if (roles[player] == Role.HITLER) {
@@ -110,7 +113,7 @@ class Game {
                             otherFac = other
                         }
                     }
-                    messagePlayer(player, "You are ${roles[player]}, the other fascist is $otherFac")
+                    messagePlayer(player, "You are ${roles[player]}, the other fascist is ${red(otherFac)}")
                 } else {
                     messagePlayer(player, "You are ${roles[player]}")
                 }
@@ -299,10 +302,10 @@ class Game {
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy == Policy.LIBERAL) {
             libEnacted++
-            messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+            messageGroup("Score: ${blue('Liberals')} $libEnacted${Colors.NORMAL}, ${red('Fascists')} $facEnacted")
         } else if (policy == Policy.FASCIST) {
             facEnacted++
-            messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+            messageGroup("Score: ${blue('Liberals')} $libEnacted${Colors.NORMAL}, ${red('Fascists')} $facEnacted")
             if (specialAction(president)) {
                 return true
             }
@@ -458,5 +461,13 @@ class Game {
     def questionPlayer(name, question) {
         messagePlayer(name, question)
         return System.console().readLine("What is your response? ")
+    }
+
+    def red(s) {
+        return Colors.RED + s + Colors.NORMAL
+    }
+
+    def blue(s) {
+        return Colors.BLUE + s + Colors.NORMAL
     }
 }
