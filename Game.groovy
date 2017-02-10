@@ -124,8 +124,24 @@ class Game {
 
     def endGame() {}
 
+    def printPlayers() {
+        def message = "Players ["
+        players.eachWithIndex { player, index ->
+            if (index == currentPresident) {
+                message += Colors.BOLD + player + Colors.NORMAL
+            } else {
+                message += player
+            }
+            if (index < players.size()-1) {
+                message += ", "
+            }
+        }
+        message += "]"
+        return message
+    }
+
     def beginPlay() {
-        messageGroup("About to begin, here is the turn order: $players")
+        messageGroup("Let's start")
         while (true) {
             if (playRound()) {
                 return
@@ -144,6 +160,7 @@ class Game {
 
     // Return true if the game is over
     def playRound() {
+        messageGroup(printPlayers())
         def president = players[currentPresident]
         if (presidentStart(president)) {
             roundEnd()
