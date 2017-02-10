@@ -249,7 +249,7 @@ class Game {
     }
 
     def electGovernment(president, chancellor) {
-        if (debug) {
+        if (Boolean.getBoolean("autoelect")) {
             return true
         }
         def threadPool

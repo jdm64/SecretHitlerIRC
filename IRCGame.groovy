@@ -14,7 +14,7 @@ class IRCGame extends Game {
     def debug = Boolean.getBoolean("debug")
     def bot
     def botName = "shitler"
-    def channelName = "#test"
+    def channelName = "#game"
     def channel
     def devoiced
     def listener = new IRCListener()
