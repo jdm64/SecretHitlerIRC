@@ -108,7 +108,7 @@ class IRCGame extends Game {
     }
 
     def electGovernment(president, chancellor) {
-        if (debug) {
+        if (Boolean.getBoolean("autoelect")) {
             return true
         } else {
             def elected = super.electGovernment(president, chancellor)

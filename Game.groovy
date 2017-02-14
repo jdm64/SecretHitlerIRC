@@ -7,21 +7,6 @@ import java.util.concurrent.atomic.*
 
 class Game {
     def debug = Boolean.getBoolean("debug")
-    enum Role { 
-        LIBERAL (Colors.BLUE),
-        FASCIST (Colors.RED),
-        HITLER (Colors.RED)
-
-        def color
-
-        Role(color) {
-            this.color = color
-        }
-    
-        public String toString() {
-            return color + super.toString() + Colors.NORMAL
-        }
-    }
 
     Map roles
     List players
