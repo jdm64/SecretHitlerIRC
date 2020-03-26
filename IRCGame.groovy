@@ -120,7 +120,7 @@ class IRCGame extends Game {
     }
 
     def kill(user) {
-        takeVoice([user])
+        //takeVoice([user])
         super.kill(user)
     }
 

@@ -374,6 +374,7 @@ class Game {
             reshuffle()
         }
         // President to peek at the top 3
+        messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
         def next = [drawPile[0], drawPile[1], drawPile[2]]
         messagePlayer(president, "The next three policies in the draw pile are: $next")
     }
@@ -394,7 +395,7 @@ class Game {
     }
 
     def specialElection(president) {
-        messageGroup("Waiting for President $president to nominate the next president.")
+        messageGroup("Special Election. Waiting for President $president to nominate the next president.")
         def response = questionPlayer(president, "Whom do you wish to nominate as the next president?")
         while (!players.contains(response)) {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
@@ -410,6 +411,7 @@ class Game {
     }
     
     def execute(president) {
+        messageGroup("President $president will now choose a player to execute.")
         // President to choose a player to execute
         def response = questionPlayer(president, "Choose a player to execute. ")
         while (!players.contains(response)) {
