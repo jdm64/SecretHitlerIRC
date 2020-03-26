@@ -373,10 +373,8 @@ class Game {
         if (drawPile.size() < 3) {
             reshuffle()
         }
-        // President to peek
-        def size = drawPile.size()
-        // Pop, pops from the back so...
-        def next = [drawPile[size - 1], drawPile[size - 2], drawPile[size -3]]
+        // President to peek at the top 3
+        def next = [drawPile[0], drawPile[1], drawPile[2]]
         messagePlayer(president, "The next three policies in the draw pile are: $next")
     }
 
