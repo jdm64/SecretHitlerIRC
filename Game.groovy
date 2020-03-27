@@ -110,7 +110,9 @@ class Game {
         return true
     }
 
-    def endGame() {}
+    def endGame() {
+        messageGroup(roles)
+    }
 
     def printPlayers() {
         def message = "Players ["
