@@ -417,8 +417,8 @@ class Game {
         messageGroup("President $president will now choose a player to execute.")
         // President to choose a player to execute
         def response = questionPlayer(president, "Choose a player to execute. ")
-        while (!players.contains(response)) {
-            response = questionPlayer(president, "$response is not a recognized user. Choose a player to execute. ")
+        while (response == president || !players.contains(response)) {
+            response = questionPlayer(president, "$response is not a recognized user, or you tried to kill yourself. Choose a player to execute. ")
         }
         if (kill(response)) {
             return true
