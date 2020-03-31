@@ -335,6 +335,7 @@ class Game {
         }
         messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
         failedElection = 0
+        lastElected.clear()
     }
 
     def specialAction(president) {
