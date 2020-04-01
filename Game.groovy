@@ -18,6 +18,7 @@ class Game {
     int libEnacted
     int facEnacted
     int failedElection
+    Events events
 
     def createGame() {
         currentPresident = 0
@@ -26,6 +27,7 @@ class Game {
         failedElection = 0
         drawPile = []
         discardPile = []
+        events = new Events()
         // Fill draw pile
         1.upto(6, {
             drawPile << Policy.LIBERAL
@@ -135,6 +137,8 @@ class Game {
         while (true) {
             if (playRound()) {
                 return
+            } else {
+                printEvents()
             }
             if (libEnacted == 5) {
                 messageGroup "Liberals win by enacting 5 liberal policies"
@@ -177,6 +181,9 @@ class Game {
         return false
     }
     def presidentStart(president) {
+        def event = new Event()
+        events.addEvent(event)
+        event.president = president
         messageGroup("Waiting for president $president to nominate a chancellor")
         messagePlayer(president, printPlayers())
         def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
@@ -185,6 +192,7 @@ class Game {
             chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
         }
         messageGroup("President $president, nominates Chancellor $chancellor.")
+        event.chancellor = chancellor
         if (electGovernment(president, chancellor)) {
             if (players.size() < 6) {
                 lastElected = [chancellor]
@@ -221,6 +229,7 @@ class Game {
             if (discard == 0) {
                 // Move to veto
                 if (veto(president, chancellor)) {
+                    event.result = "Veto"
                     return false
                 }
                 question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
@@ -231,10 +240,12 @@ class Game {
                 discard = response as int
             }
             discardPolicy(policies.removeAt(discard - 1))
+            event.result = "${policies[0]} policy enacted"
             if (enactPolicy(president, chancellor, policies[0])) {
                 return true
             }
         } else {
+            event.result = "Failed"
             failedElection++
             if (failedElection < 3) {
                 messageGroup("The election fails, the failed election marker is now at $failedElection")
@@ -467,5 +478,9 @@ class Game {
 
     def blue(s) {
         return Colors.BLUE + s + Colors.NORMAL
+    }
+
+    def printEvents() {
+        events.dumpEvents()
     }
 }

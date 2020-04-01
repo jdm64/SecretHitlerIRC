@@ -12,6 +12,7 @@ import java.util.concurrent.*
 
 class IRCGame extends Game {
     def debug = Boolean.getBoolean("debug")
+    def debugUser = "dan"
     def bot
     def botName = "shitler"
     def channelName = "#game"
@@ -85,7 +86,7 @@ class IRCGame extends Game {
 
     def takeVoice(names) {
         if (debug) {
-            names << "daniel"
+            names << debugUser
         }
         channel.users.each { user ->
             if (names?.contains(user.getNick())) {
@@ -135,7 +136,7 @@ class IRCGame extends Game {
 
     def messagePlayer(name, message) {
         if (debug) {
-            bot.send().message("daniel", "$name: $message")
+            bot.send().message(debugUser, "$name: $message")
         } else {
             bot.send().message(name, message)
         }
@@ -145,9 +146,15 @@ class IRCGame extends Game {
         listener.clearLastMessage(name)
         messagePlayer(name, question)
         if (debug) {
-            return listener.nextMessageFrom("daniel")
+            return listener.nextMessageFrom(debugUser)
         } else {
             return listener.nextMessageFrom(name)
+        }
+    }
+
+    def printEvents() {
+        events.getSerializedEvents().each { event ->
+            messageGroup(event)
         }
     }
 }
