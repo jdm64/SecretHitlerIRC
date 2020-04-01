@@ -218,11 +218,21 @@ class Game {
                 response = questionPlayer(president, "Please choose a number between $min and 3")
             }
             discard = response as int
-            if (discard != 0 || !veto(president, chancellor)) {
-                discardPolicy(policies.removeAt(discard - 1))
-                if (enactPolicy(president, chancellor, policies[0])) {
-                    return true
+            if (discard == 0) {
+                // Move to veto
+                if (veto(president, chancellor)) {
+                    return false
                 }
+                question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
+                response = questionPlayer(chancellor, question)
+                while (!isNumberInRange(response, 1, 2)) {
+                    response = questionPlayer(president, "Please choose a number between $min and 3")
+                }
+                discard = response as int
+            }
+            discardPolicy(policies.removeAt(discard - 1))
+            if (enactPolicy(president, chancellor, policies[0])) {
+                return true
             }
         } else {
             failedElection++
