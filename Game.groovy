@@ -199,13 +199,13 @@ class Game {
                 return true
             }
             def policies = drawPolicies()
-            def response = questionPlayer(president, "Choose a policy to discard from $policies [1,2,3]")
+            def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
             while (!isNumberInRange(response, 1, 3)) {
                 response = questionPlayer(president, "Please choose a number between 1 and 3")
             }
             def discard = response as int
             discardPolicy(policies.removeAt(discard - 1))
-            def question = "Choose a policy to discard (the other will be enacted) from $policies [1,2]."
+            def question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
             if (facEnacted == 5) {
                 question += " Note: choose 0 to propose a veto."
             }
@@ -289,10 +289,10 @@ class Game {
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy == Policy.LIBERAL) {
             libEnacted++
-            messageGroup("Score: ${blue('Liberals')} $libEnacted${Colors.NORMAL}, ${red('Fascists')} $facEnacted")
+            messageGroup("Score: ${blue('Liberals')} $libEnacted/5${Colors.NORMAL}, ${red('Fascists')} $facEnacted/6")
         } else if (policy == Policy.FASCIST) {
             facEnacted++
-            messageGroup("Score: ${blue('Liberals')} $libEnacted${Colors.NORMAL}, ${red('Fascists')} $facEnacted")
+            messageGroup("Score: ${blue('Liberals')} $libEnacted/5${Colors.NORMAL}, ${red('Fascists')} $facEnacted/6")
             if (specialAction(president)) {
                 return true
             }
