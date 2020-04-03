@@ -13,7 +13,8 @@ class Game {
     int numPlayers
     List drawPile
     List discardPile
-    List lastElected = []
+    List lastElected
+    List cnhList
     int currentPresident
     int libEnacted
     int facEnacted
@@ -28,6 +29,7 @@ class Game {
         drawPile = []
         discardPile = []
         lastElected = []
+        cnhList = []
         events = new Events()
         // Fill draw pile
         1.upto(6, {
@@ -122,8 +124,12 @@ class Game {
         players.eachWithIndex { player, index ->
             if (index == currentPresident) {
                 message += Colors.BOLD + player + Colors.NORMAL
-            } else if (lastElected.contains(player)){
+            } else if (lastElected.contains(player) && cnhList.contains(player)) {
+                message += "*+$player+*"
+            } else if (lastElected.contains(player)) {
                 message += "*$player*"
+            }  else if (cnhList.contains(player)) {
+                message += "+$player+"
             } else {
                 message += player
             }
@@ -131,7 +137,7 @@ class Game {
                 message += ", "
             }
         }
-        message += "]"
+        message += "] (* = incumbent, + = cnh)"
         return message
     }
 
@@ -204,10 +210,14 @@ class Game {
             }
             failedElection = 0
             messageGroup("The election passes")
-            if (facEnacted >= 3 && roles.get(chancellor) == Role.HITLER) {
-                messageGroup("The fascists win! Hitler has been elected chancellor.")
-                endGame()
-                return true
+            if (facEnacted >= 3) {
+                if (roles.get(chancellor) == Role.HITLER) {
+                    messageGroup("The fascists win! Hitler has been elected chancellor.")
+                    endGame()
+                    return true
+                } else {
+                    cnhList << chancellor
+                }
             }
             def policies = drawPolicies()
             def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
@@ -391,7 +401,6 @@ class Game {
                     return specialElection(president)
                 }
                 break
-                break
         }
         return false
     }
@@ -422,6 +431,7 @@ class Game {
     }
 
     def specialElection(president) {
+        printEvents()
         messageGroup("Special Election. Waiting for President $president to nominate the next president.")
         def response = questionPlayer(president, "Whom do you wish to nominate as the next president?")
         while (!players.contains(response)) {
