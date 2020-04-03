@@ -121,6 +121,8 @@ class Game {
         players.eachWithIndex { player, index ->
             if (index == currentPresident) {
                 message += Colors.BOLD + player + Colors.NORMAL
+            } else if (lastElected.contains(player)){
+                message += "*$player*"
             } else {
                 message += player
             }
