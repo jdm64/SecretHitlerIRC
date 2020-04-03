@@ -370,6 +370,13 @@ class Game {
         messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
         failedElection = 0
         lastElected.clear()
+
+        def event = new Event()
+        events.addEvent(event)
+        event.president = ""
+        event.chancellor = ""
+        event.result = "Top Card: $policy"
+        printEvents()
     }
 
     def specialAction(president) {
