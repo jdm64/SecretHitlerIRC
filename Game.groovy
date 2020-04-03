@@ -376,7 +376,6 @@ class Game {
         event.president = ""
         event.chancellor = ""
         event.result = "Top Card: $policy"
-        printEvents()
     }
 
     def specialAction(president) {

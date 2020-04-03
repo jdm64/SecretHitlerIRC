@@ -20,7 +20,12 @@ class Events {
             line += "|"
             line += event.chancellor.center(22)
             line += "|"
-            line += event.result.center(29)
+            if (event.result.contains("LIBERAL") || event.result.contains("FASCIST")) {
+                // These have color codes, so adjust the buffer size
+                line += event.result.center(29)
+            } else {
+                line += event.result.center(25)
+            }
             line += "|"
             eventsList << line
         }
