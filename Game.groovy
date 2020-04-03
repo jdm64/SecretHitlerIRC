@@ -27,6 +27,7 @@ class Game {
         failedElection = 0
         drawPile = []
         discardPile = []
+        lastElected = []
         events = new Events()
         // Fill draw pile
         1.upto(6, {
