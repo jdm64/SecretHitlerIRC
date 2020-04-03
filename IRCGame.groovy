@@ -12,6 +12,7 @@ import java.util.concurrent.*
 
 class IRCGame extends Game {
     def debug = Boolean.getBoolean("debug")
+    def voicing = Boolean.getBoolean("voicing")
     def debugUser = "dan"
     def bot
     def botName = "shitler"
@@ -75,29 +76,35 @@ class IRCGame extends Game {
         giveVoice(null)
     }
     def giveVoice(names) {
-        channel.users.each { user ->
-            if (!user.getNick().equals(botName)) {
-                if (names == null || names.contains(user.getNick())) {
-                    channel.send().voice(user)
+        if (voicing) {
+            channel.users.each { user ->
+                if (!user.getNick().equals(botName)) {
+                    if (names == null || names.contains(user.getNick())) {
+                        channel.send().voice(user)
+                    }
                 }
             }
         }
     }
 
     def takeVoice(names) {
-        if (debug) {
-            names << debugUser
-        }
-        channel.users.each { user ->
-            if (names?.contains(user.getNick())) {
-                channel.send().deVoice(user)
+        if (voicing) {
+            if (debug) {
+                names << debugUser
             }
-        }
+            channel.users.each { user ->
+                if (names?.contains(user.getNick())) {
+                    channel.send().deVoice(user)
+                }
+            }
         devoiced = names
+        }
     }
 
     def startGame(names) {
-        channel.send().setMode("+m")
+        if (voicing) {
+            channel.send().setMode("+m")
+        }
         giveVoice()
         super.startGame(names)
     }
