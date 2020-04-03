@@ -126,7 +126,9 @@ class IRCGame extends Game {
     }
 
     def endGame() {
-        super.endGame()
+        roles.each {
+            messageGroup "${it.key} was ${it.value}"
+        }
         giveVoice(null)
     }
 
