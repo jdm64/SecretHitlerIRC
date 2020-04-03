@@ -9,7 +9,7 @@ class Events {
     def getSerializedEvents() {
         def eventsList = []
         eventsList << "+-------+---------------------+----------------------+-------------------------+"
-        eventsList << "| Round |      President      |      Chancellor      |         Result          |"
+        eventsList << "| Event |      President      |      Chancellor      |         Result          |"
         eventsList << "+-------+---------------------+----------------------+-------------------------+"
         events.eachWithIndex { event, index ->
             def indexString = (index + 1) as String
