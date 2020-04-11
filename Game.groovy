@@ -90,9 +90,9 @@ class Game {
                     }
                 }
                 if (others.isEmpty()) {
-                    messagePlayer(player, "You are a ${roles[player]}, Hitler is ${red(hitler)}")
+                    messagePlayer(player, "You are a ${roles[player]}, Hitler is ${hitler}")
                 } else {
-                    messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are ${red(others)}, Hitler is ${red(hitler)}")
+                    messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are ${others}, Hitler is ${hitler}")
                 }
 
             } else if (roles[player] == Role.HITLER) {
@@ -103,7 +103,7 @@ class Game {
                             otherFac = other
                         }
                     }
-                    messagePlayer(player, "You are ${roles[player]}, the other fascist is ${red(otherFac)}")
+                    messagePlayer(player, "You are ${roles[player]}, the other fascist is ${otherFac}")
                 } else {
                     messagePlayer(player, "You are ${roles[player]}")
                 }
@@ -323,10 +323,10 @@ class Game {
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy == Policy.LIBERAL) {
             libEnacted++
-            messageGroup("Score: ${blue('Liberals')} $libEnacted/5${Colors.NORMAL}, ${red('Fascists')} $facEnacted/6")
+            messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
         } else if (policy == Policy.FASCIST) {
             facEnacted++
-            messageGroup("Score: ${blue('Liberals')} $libEnacted/5${Colors.NORMAL}, ${red('Fascists')} $facEnacted/6")
+            messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
             if (specialAction(president)) {
                 return true
             }
@@ -489,14 +489,6 @@ class Game {
     def questionPlayer(name, question) {
         messagePlayer(name, question)
         return System.console().readLine("What is your response? ")
-    }
-
-    def red(s) {
-        return Colors.RED + s + Colors.NORMAL
-    }
-
-    def blue(s) {
-        return Colors.BLUE + s + Colors.NORMAL
     }
 
     def printEvents() {
