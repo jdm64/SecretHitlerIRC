@@ -268,7 +268,7 @@ class Game {
             }
             discardPolicy(policies.removeAt(discard - 1))
 
-            event.result = "${policies[0]} policy enacted"
+            event.result = "${policies[0]}"
             if (enactPolicy(president, chancellor, policies[0])) {
                 return true
             }

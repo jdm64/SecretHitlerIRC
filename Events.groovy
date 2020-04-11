@@ -22,7 +22,7 @@ class Events {
             line += "|"
             if (event.result.contains("LIBERAL") || event.result.contains("FASCIST")) {
                 // These have color codes, so adjust the buffer size
-                line += event.result.center(29)
+                line += event.result.center(25 + event.result.size() - 7)
             } else {
                 line += event.result.center(25)
             }
