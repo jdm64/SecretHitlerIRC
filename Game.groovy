@@ -205,6 +205,27 @@ class Game {
         }
     }
 
+    def askPresidentDiscard(president, policies) {
+        def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
+        while (!isNumberInRange(response, 1, 3)) {
+            response = questionPlayer(president, "Please choose a number between 1 and 3")
+        }
+        return response
+    }
+
+    def askChancellorDiscard(chancellor, policies, vetoEnabled) {
+        def question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
+        if (vetoEnabled) {
+            question += " Note: choose 0 to propose a veto."
+        }
+        def response = questionPlayer(chancellor, question)
+        def min = vetoEnabled ? 0 : 1
+        while (!isNumberInRange(response, min, 2)) {
+            response = questionPlayer(chancellor, "Please choose a number between $min and 2")
+        }
+        return response
+    }
+
     def presidentStart(president) {
         messageGroup("Waiting for president $president to nominate a chancellor")
         def chancellor = nominateChancellor(president)
@@ -232,40 +253,21 @@ class Game {
                     cnhList << chancellor
                 }
             }
+
             def policies = drawPolicies()
-            def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
-            while (!isNumberInRange(response, 1, 3)) {
-                response = questionPlayer(president, "Please choose a number between 1 and 3")
-            }
-            def discard = response as int
+            def discard = askPresidentDiscard(president, policies) as int
             discardPolicy(policies.removeAt(discard - 1))
-            def question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
-            if (facEnacted == 5) {
-                question += " Note: choose 0 to propose a veto."
-            }
-            response = questionPlayer(chancellor, question)
-            def min = 1
-            if (facEnacted == 5) {
-                min = 0
-            }
-            while (!isNumberInRange(response, min, 2)) {
-                response = questionPlayer(president, "Please choose a number between $min and 3")
-            }
-            discard = response as int
+            discard = askChancellorDiscard(chancellor, policies, facEnacted == 5) as int
             if (discard == 0) {
                 // Move to veto
                 if (veto(president, chancellor)) {
                     event.result = "Veto"
                     return false
                 }
-                question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
-                response = questionPlayer(chancellor, question)
-                while (!isNumberInRange(response, 1, 2)) {
-                    response = questionPlayer(president, "Please choose a number between $min and 3")
-                }
-                discard = response as int
+                discard = askChancellorDiscard(chancellor, policies, false) as int
             }
             discardPolicy(policies.removeAt(discard - 1))
+
             event.result = "${policies[0]} policy enacted"
             if (enactPolicy(president, chancellor, policies[0])) {
                 return true
