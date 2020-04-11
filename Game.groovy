@@ -78,7 +78,7 @@ class Game {
         Collections.shuffle(players)
         players.eachWithIndex { player, index ->
             if (roles[player] == Role.LIBERAL) {
-                messagePlayer(player, "You are a ${roles.get(player)}")
+                messagePlayer(player, "You are a ${roles[player]}")
             } else if (roles[player] == Role.FASCIST) {
                 def others = []
                 def hitler
@@ -94,7 +94,6 @@ class Game {
                 } else {
                     messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are ${others}, Hitler is ${hitler}")
                 }
-
             } else if (roles[player] == Role.HITLER) {
                 if (players.size() < 7) {
                     def otherFac
@@ -178,7 +177,7 @@ class Game {
     }
 
     def roundEnd() {}
-    
+
     // Checks if the given string value is a number, and in range.
     def isNumberInRange(value, min, max) {
         if (value.isNumber()) {
@@ -466,7 +465,7 @@ class Game {
         }
         return result
     }
-    
+
     def execute(president) {
         messageGroup("President $president will now choose a player to execute.")
         // President to choose a player to execute

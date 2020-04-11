@@ -56,7 +56,6 @@ class IRCGame extends Game {
             }
             return lastMessage.remove(name)
         }
-    
     }
 
     def IRCGame() {
@@ -108,7 +107,7 @@ class IRCGame extends Game {
         giveVoice()
         super.startGame(names)
     }
-    
+
     def roundEnd() {
         if (devoiced) {
             giveVoice(devoiced)
