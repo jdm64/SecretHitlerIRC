@@ -306,10 +306,10 @@ class Game {
                     response = response.toLowerCase()
                     if (response == "j" || response == "ja" || response.startsWith("y")) {
                         elected.getAndIncrement()
-                        votingRecord << [(player): "Ja"]
+                        votingRecord << [(player): true]
                     } else {
                         elected.getAndDecrement()
-                        votingRecord << [(player): "Nein"]
+                        votingRecord << [(player): false]
                     }
                 } as Callable)
             }
@@ -317,7 +317,10 @@ class Game {
             threadPool.shutdown()
         }
         futures.each{it.get()}
-        messageGroup("The results are: $votingRecord")
+
+        def ja = votingRecord.findAll{it.value}.collect{it.key}
+        def nein = votingRecord.findAll{!it.value}.collect{it.key}
+        messageGroup("The results are: Ja $ja; Nein $nein")
         return elected.get() > 0
     }
 
