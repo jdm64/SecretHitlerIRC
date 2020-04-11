@@ -189,19 +189,33 @@ class Game {
         }
         return false
     }
-    def presidentStart(president) {
-        def event = new Event()
-        events.addEvent(event)
-        event.president = president
-        messageGroup("Waiting for president $president to nominate a chancellor")
+
+    def nominateChancellor(president) {
         messagePlayer(president, printPlayers())
-        def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
-        while (!players.contains(chancellor) || president == chancellor || lastElected.contains(chancellor)) {
-            messagePlayer(president,  "Chancellor $chancellor doesn't exist (or is not eligible), try again")
-            chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
+        while (true) {
+            def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
+            if (!players.contains(chancellor)) {
+                messagePlayer(president, "Who? I don't know ${chancellor}.")
+            } else if (president == chancellor) {
+                messagePlayer(president, "This isn't a monarchy.")
+            } else if (lastElected.contains(chancellor)) {
+                messagePlayer(president, "${chancellor} is incumbent.")
+            } else {
+                return chancellor
+            }
         }
+    }
+
+    def presidentStart(president) {
+        messageGroup("Waiting for president $president to nominate a chancellor")
+        def chancellor = nominateChancellor(president)
         messageGroup("President $president, nominates Chancellor $chancellor.")
+
+        def event = new Event()
+        event.president = president
         event.chancellor = chancellor
+        events.addEvent(event)
+
         if (electGovernment(president, chancellor)) {
             if (players.size() < 6) {
                 lastElected = [chancellor]
