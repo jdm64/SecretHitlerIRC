@@ -318,10 +318,9 @@ class Game {
         }
         futures.each{it.get()}
 
-        def ja = votingRecord.findAll{it.value}.collect{it.key}
-        def nein = votingRecord.findAll{!it.value}.collect{it.key}
-        event.votes = "Ja$ja Nein$nein"
-        messageGroup("The results are: $event.votes")
+        event.ja = votingRecord.findAll{it.value}.collect{it.key}.sort()
+        event.nein = votingRecord.findAll{!it.value}.collect{it.key}.sort()
+        messageGroup("The results are: Ja$event.ja Nein$event.nein")
         return elected.get() > 0
     }
 

@@ -6,55 +6,67 @@ class Events {
         events << e
     }
 
+    def dash(count) {
+        return "-" * count
+    }
+
+    def divider(columns) {
+        return "+" + columns.collect{ it -> dash(it.value) }.join("+") + "+"
+    }
+
+    def header(columns) {
+        return "|" + columns.collect{ it -> it.key.center(it.value) }.join("|") + "|"
+    }
+
     def getSerializedEvents() {
         def eventsList = []
 
-        def presSize = "President".size()
-        def chanSize = "Chancellor".size()
-        def resSize = "Result".size()
-        def votSize = "Votes".size()
+        def columns = [:]
+        ["Round", "President", "Chancellor", "Result", "Ja", "Nein"].each{ i -> columns << [(i): i.size()] }
+
         events.each { event ->
-            presSize = Math.max(presSize, event.president.size())
-            chanSize = Math.max(chanSize, event.chancellor.size())
+            columns.President = Math.max(columns.President, event.president.size())
+            columns.Chancellor = Math.max(columns.Chancellor, event.chancellor.size())
 
-            def res = event.result.size()
-            if (event.result.contains("LIBERAL") || event.result.contains("FASCIST")) {
-                res = 7
-            }
-            resSize = Math.max(resSize, res)
+            // these have color codes
+            def result = event.result
+            def resSize = (result.contains("LIBERAL") || result.contains("FASCIST")) ? 7 : result.size()
+            columns.Result = Math.max(columns.Result, resSize)
 
-            votSize = Math.max(votSize, event.votes.size())
+            // brackets will be removed so minus 2
+            columns.Ja = Math.max(columns.Ja, event.ja.size() - 2)
+            columns.Nein = Math.max(columns.Nein, event.nein.size() - 2)
         }
-        def pad = 2
-        presSize += pad
-        chanSize += pad
-        resSize += pad
-        votSize += pad
 
-        eventsList << "+" + ("-" * 7) + "+" + ("-" * presSize) + "+" + ("-" * chanSize) + "+" + ("-" * resSize) + "+" + ("-" * votSize) + "+"
-        eventsList << "| Round |" + "President".center(presSize) + "|" + "Chancellor".center(chanSize) + "|" + "Result".center(resSize) + "|" + "Votes".center(votSize) + "|"
-        eventsList << "+" + ("-" * 7) + "+" + ("-" * presSize) + "+" + ("-" * chanSize) + "+" + ("-" * resSize) + "+" + ("-" * votSize) + "+"
+        // add size for space on either side
+        columns.each { it.value += 2 }
+
+        eventsList << divider(columns)
+        eventsList << header(columns)
+        eventsList << divider(columns)
         events.eachWithIndex { event, index ->
             def indexString = (index + 1) as String
             def line = "|"
-            line += indexString.center(7)
+            line += indexString.center(columns.Round)
             line += "|"
-            line += event.president.center(presSize)
+            line += event.president.center(columns.President)
             line += "|"
-            line += event.chancellor.center(chanSize)
+            line += event.chancellor.center(columns.Chancellor)
             line += "|"
             if (event.result.contains("LIBERAL") || event.result.contains("FASCIST")) {
                 // These have color codes, so adjust the buffer size
-                line += event.result.center(resSize + event.result.size() - 7)
+                line += event.result.center(columns.Result + event.result.size() - 7)
             } else {
-                line += event.result.center(resSize)
+                line += event.result.center(columns.Result)
             }
             line += "|"
-            line += event.votes.center(votSize)
+            line += event.ja[1..-2].center(columns.Ja)
+            line += "|"
+            line += event.nein[1..-2].center(columns.Nein)
             line += "|"
             eventsList << line
         }
-        eventsList << "+" + ("-" * 7) + "+" + ("-" * presSize) + "+" + ("-" * chanSize) + "+" + ("-" * resSize) + "+" + ("-" * votSize) + "+"
+        eventsList << divider(columns)
         return eventsList
     }
 
