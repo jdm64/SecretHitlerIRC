@@ -236,7 +236,7 @@ class Game {
         event.chancellor = chancellor
         events.addEvent(event)
 
-        if (electGovernment(president, chancellor)) {
+        if (electGovernment(event, president, chancellor)) {
             if (players.size() < 6) {
                 lastElected = [chancellor]
             } else {
@@ -284,7 +284,7 @@ class Game {
         return false
     }
 
-    def electGovernment(president, chancellor) {
+    def electGovernment(event, president, chancellor) {
         if (Boolean.getBoolean("autoelect")) {
             return true
         }
@@ -320,7 +320,8 @@ class Game {
 
         def ja = votingRecord.findAll{it.value}.collect{it.key}
         def nein = votingRecord.findAll{!it.value}.collect{it.key}
-        messageGroup("The results are: Ja $ja; Nein $nein")
+        event.votes = "Ja$ja Nein$nein"
+        messageGroup("The results are: $event.votes")
         return elected.get() > 0
     }
 

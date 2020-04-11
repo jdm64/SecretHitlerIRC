@@ -8,28 +8,53 @@ class Events {
 
     def getSerializedEvents() {
         def eventsList = []
-        eventsList << "+-------+---------------------+----------------------+-------------------------+"
-        eventsList << "| Event |      President      |      Chancellor      |         Result          |"
-        eventsList << "+-------+---------------------+----------------------+-------------------------+"
+
+        def presSize = "President".size()
+        def chanSize = "Chancellor".size()
+        def resSize = "Result".size()
+        def votSize = "Votes".size()
+        events.each { event ->
+            presSize = Math.max(presSize, event.president.size())
+            chanSize = Math.max(chanSize, event.chancellor.size())
+
+            def res = event.result.size()
+            if (event.result.contains("LIBERAL") || event.result.contains("FASCIST")) {
+                res = 7
+            }
+            resSize = Math.max(resSize, res)
+
+            votSize = Math.max(votSize, event.votes.size())
+        }
+        def pad = 2
+        presSize += pad
+        chanSize += pad
+        resSize += pad
+        votSize += pad
+
+        eventsList << "+" + ("-" * 7) + "+" + ("-" * presSize) + "+" + ("-" * chanSize) + "+" + ("-" * resSize) + "+" + ("-" * votSize) + "+"
+        eventsList << "| Round |" + "President".center(presSize) + "|" + "Chancellor".center(chanSize) + "|" + "Result".center(resSize) + "|" + "Votes".center(votSize) + "|"
+        eventsList << "+" + ("-" * 7) + "+" + ("-" * presSize) + "+" + ("-" * chanSize) + "+" + ("-" * resSize) + "+" + ("-" * votSize) + "+"
         events.eachWithIndex { event, index ->
             def indexString = (index + 1) as String
             def line = "|"
             line += indexString.center(7)
             line += "|"
-            line += event.president.center(21)
+            line += event.president.center(presSize)
             line += "|"
-            line += event.chancellor.center(22)
+            line += event.chancellor.center(chanSize)
             line += "|"
             if (event.result.contains("LIBERAL") || event.result.contains("FASCIST")) {
                 // These have color codes, so adjust the buffer size
-                line += event.result.center(25 + event.result.size() - 7)
+                line += event.result.center(resSize + event.result.size() - 7)
             } else {
-                line += event.result.center(25)
+                line += event.result.center(resSize)
             }
+            line += "|"
+            line += event.votes.center(votSize)
             line += "|"
             eventsList << line
         }
-        eventsList << "+-------+---------------------+----------------------+-------------------------+"
+        eventsList << "+" + ("-" * 7) + "+" + ("-" * presSize) + "+" + ("-" * chanSize) + "+" + ("-" * resSize) + "+" + ("-" * votSize) + "+"
         return eventsList
     }
 
