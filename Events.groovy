@@ -60,9 +60,9 @@ class Events {
                 line += event.result.center(columns.Result)
             }
             line += "|"
-            line += event.ja[1..-2].center(columns.Ja)
+            line += (event.ja.size() > 2 ? event.ja[1..-2] : " ").center(columns.Ja)
             line += "|"
-            line += event.nein[1..-2].center(columns.Nein)
+            line += (event.nein.size() > 2 ? event.nein[1..-2] : " ").center(columns.Nein)
             line += "|"
             eventsList << line
         }
