@@ -11,12 +11,7 @@ import java.util.concurrent.*
 
 
 class IRCGame extends Game {
-    def debug = Boolean.getBoolean("debug")
-    def voicing = Boolean.getBoolean("voicing")
-    def debugUser = "dan"
     def bot
-    def botName = System.getProperty("botName", "shitler")
-    def channelName = System.getProperty("channel", "#game")
     def channel
     def devoiced
     def listener = new IRCListener()
@@ -25,17 +20,17 @@ class IRCGame extends Game {
         def lastMessage = new ConcurrentHashMap()
 
         public void onMessage(MessageEvent event) {
-            if (event.message.startsWith(botName + ":")) {
-                def command = event.message - "$botName:"
+            if (event.message.startsWith(Config.botName + ":")) {
+                def command = event.message - "${Config.botName}:"
                 switch (command.trim().toLowerCase()) {
                     case "start":
                         channel = event.channel
                         createGame()
                         def users = channel.usersNicks
-                        if (debug) {
+                        if (Config.debug) {
                             startGame(["one", "two", "three", "four", "five"])
                         } else {
-                            startGame(new ArrayList(users - botName))
+                            startGame(new ArrayList(users - Config.botName))
                         }
                         break;
                 }
@@ -60,10 +55,10 @@ class IRCGame extends Game {
 
     def IRCGame() {
         def config = new Configuration.Builder()
-            .setName(botName)
-            .addServer(System.getProperty("server", "skynet.parasoft.com"))
+            .setName(Config.botName)
+            .addServer(Config.server)
             .addListener(listener)
-            .addAutoJoinChannel(channelName)
+            .addAutoJoinChannel(Config.channelName)
             .setMessageDelay(10)
             .buildConfiguration()
         bot = new PircBotX(config)
@@ -76,9 +71,9 @@ class IRCGame extends Game {
         giveVoice(null)
     }
     def giveVoice(names) {
-        if (voicing) {
+        if (Config.voicing) {
             channel.users.each { user ->
-                if (!user.getNick().equals(botName)) {
+                if (!user.getNick().equals(Config.botName)) {
                     if (names == null || names.contains(user.getNick())) {
                         channel.send().voice(user)
                     }
@@ -88,9 +83,9 @@ class IRCGame extends Game {
     }
 
     def takeVoice(names) {
-        if (voicing) {
-            if (debug) {
-                names << debugUser
+        if (Config.voicing) {
+            if (Config.debug) {
+                names << Config.debugUser
             }
             channel.users.each { user ->
                 if (names?.contains(user.getNick())) {
@@ -102,7 +97,7 @@ class IRCGame extends Game {
     }
 
     def startGame(names) {
-        if (voicing) {
+        if (Config.voicing) {
             channel.send().setMode("+m")
         }
         giveVoice()
@@ -116,7 +111,7 @@ class IRCGame extends Game {
     }
 
     def electGovernment(president, chancellor) {
-        if (Boolean.getBoolean("autoelect")) {
+        if (Config.autoelect) {
             return true
         } else {
             def elected = super.electGovernment(president, chancellor)
@@ -144,8 +139,8 @@ class IRCGame extends Game {
     }
 
     def messagePlayer(name, message) {
-        if (debug) {
-            bot.send().message(debugUser, "$name: $message")
+        if (Config.debug) {
+            bot.send().message(Config.debugUser, "$name: $message")
         } else {
             bot.send().message(name, message)
         }
@@ -154,8 +149,8 @@ class IRCGame extends Game {
     def questionPlayer(name, question) {
         listener.clearLastMessage(name)
         messagePlayer(name, question)
-        if (debug) {
-            return listener.nextMessageFrom(debugUser)
+        if (Config.debug) {
+            return listener.nextMessageFrom(Config.debugUser)
         } else {
             return listener.nextMessageFrom(name)
         }

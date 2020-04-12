@@ -6,7 +6,6 @@ import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 
 class Game {
-    def debug = Boolean.getBoolean("debug")
 
     Map roles
     List players
@@ -282,11 +281,11 @@ class Game {
     }
 
     def electGovernment(event, president, chancellor) {
-        if (Boolean.getBoolean("autoelect")) {
+        if (Config.autoelect) {
             return true
         }
         def threadPool
-        if (debug) {
+        if (Config.debug) {
             threadPool = Executors.newFixedThreadPool(1)
         } else {
             threadPool = Executors.newFixedThreadPool(players.size())
