@@ -168,10 +168,7 @@ class Game {
             roundEnd()
             return true
         }
-        currentPresident++
-        if (currentPresident >= players.size()) {
-            currentPresident = 0
-        }
+        currentPresident = ++currentPresident % players.size()
         roundEnd()
         return false
     }
