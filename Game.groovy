@@ -443,12 +443,8 @@ class Game {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
         }
         messageGroup("President $president to inspect the party membership of $response")
-        def role = roles.get(response)
-        if (role == Role.LIBERAL) {
-            messagePlayer(president, "$response is a liberal")
-        } else {
-            messagePlayer(president, "$response is a fascist")
-        }
+        def role = roles.get(response) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
+        messagePlayer(president, "$response is a $role")
     }
 
     def specialElection(president) {
