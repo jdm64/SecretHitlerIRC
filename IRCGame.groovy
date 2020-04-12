@@ -15,8 +15,8 @@ class IRCGame extends Game {
     def voicing = Boolean.getBoolean("voicing")
     def debugUser = "dan"
     def bot
-    def botName = "shitler"
-    def channelName = "#game"
+    def botName = System.getProperty("botName", "shitler")
+    def channelName = System.getProperty("channel", "#game")
     def channel
     def devoiced
     def listener = new IRCListener()
@@ -61,7 +61,7 @@ class IRCGame extends Game {
     def IRCGame() {
         def config = new Configuration.Builder()
             .setName(botName)
-            .addServer("skynet.parasoft.com")
+            .addServer(System.getProperty("server", "skynet.parasoft.com"))
             .addListener(listener)
             .addAutoJoinChannel(channelName)
             .buildConfiguration()
