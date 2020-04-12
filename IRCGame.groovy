@@ -64,6 +64,7 @@ class IRCGame extends Game {
             .addServer(System.getProperty("server", "skynet.parasoft.com"))
             .addListener(listener)
             .addAutoJoinChannel(channelName)
+            .setMessageDelay(10)
             .buildConfiguration()
         bot = new PircBotX(config)
         Thread.start {
