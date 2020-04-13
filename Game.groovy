@@ -282,6 +282,8 @@ class Game {
 
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
+            event.ja = players
+            event.nein = ""
             return true
         }
         def threadPool
