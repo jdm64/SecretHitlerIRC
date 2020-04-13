@@ -345,9 +345,6 @@ class Game {
     }
 
     def drawPolicies() {
-        if (drawPile.size() < 3) {
-            reshuffle()
-        }
         return [drawPile.pop(), drawPile.pop(), drawPile.pop()]
     }
 
@@ -362,9 +359,11 @@ class Game {
         if (policy == Policy.LIBERAL) {
             libEnacted++
             messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
+            reshuffle()
         } else if (policy == Policy.FASCIST) {
             facEnacted++
             messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
+            reshuffle()
             if (specialAction(president)) {
                 return true
             }
@@ -373,6 +372,9 @@ class Game {
     }
 
     def reshuffle() {
+        if (drawPile.size() >= 3) {
+            return
+        }
         messageGroup("Reshuffling the deck")
         drawPile.addAll(discardPile)
         discardPile.clear()
@@ -397,9 +399,12 @@ class Game {
     }
 
     def topCard() {
-        def policy = drawPile.pop()
         messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
+
+        reshuffle()
+        def policy = drawPile.pop()
+
         if (policy == Policy.LIBERAL) {
             libEnacted++
         } else if (policy == Policy.FASCIST) {
@@ -450,9 +455,6 @@ class Game {
     }
 
     def peek(president) {
-        if (drawPile.size() < 3) {
-            reshuffle()
-        }
         // President to peek at the top 3
         messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
         def next = [drawPile[0], drawPile[1], drawPile[2]]
