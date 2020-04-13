@@ -483,9 +483,17 @@ class Game {
     def specialElection(president) {
         printEvents()
         messageGroup("Special Election. Waiting for President $president to nominate the next president.")
-        def response = questionPlayer(president, "Whom do you wish to nominate as the next president?")
-        while (!players.contains(response)) {
-            response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
+        def validPlayers = players - president
+        def response
+        while (true) {
+            response = questionPlayer(president, "Whom do you wish to nominate as the next president? $validPlayers")
+            if (president == response) {
+                messagePlayer(president, "You cannot nominate yourself")
+            } else if (!players.contains(response)) {
+                messagePlayer(president, "$response is not a recognized user.")
+            } else {
+                break
+            }
         }
         messageGroup("President $president nominates $response to be the next president.")
         def backupLastElected = lastElected
