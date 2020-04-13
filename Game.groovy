@@ -20,8 +20,15 @@ class Game {
     int failedElection
     Events events
 
-    def createGame() {
-        currentPresident = 0
+    def startGame(names) {
+        if (names.size() < 5) {
+            messageGroup("Not enough players to start, need at least 5.")
+            return false
+        } else if (names.size() > 10) {
+            messageGroup("Too many players to start, maximum is 10.")
+            return false
+        }
+
         libEnacted = 0
         facEnacted = 0
         failedElection = 0
@@ -38,17 +45,6 @@ class Game {
             drawPile << Policy.FASCIST
         })
         Collections.shuffle(drawPile)
-    }
-
-    def startGame(names) {
-        if (names.size() < 5) {
-            messageGroup("Not enough players to start, need at least 5.")
-            return false
-        }
-        if (names.size() > 10) {
-            messageGroup("Too many players to start, maximum is 10.")
-            return false
-        }
 
         // Assign roles to players
         numPlayers = names.size()
