@@ -437,7 +437,7 @@ class Game {
 
     def inspect(president) {
         messageGroup("Waiting for President $president to decide whom to inspect.")
-        def response = questionPlayer(president, "Whom do you wish to inspect?")
+        def response = questionPlayer(president, "Whom do you wish to inspect? $players")
         while (!players.contains(response)) {
             response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
         }
