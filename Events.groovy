@@ -18,7 +18,24 @@ class Events {
         return "|" + columns.collect{ it -> it.key.center(it.value) }.join("|") + "|"
     }
 
-    def getSerializedEvents() {
+    def minimalTable() {
+        def eventsList = []
+
+        eventsList << "President > Chancellor => Result ++ Ja -- Nein"
+
+        events.each { event ->
+            def line = event.president + " > "
+            line += event.chancellor + " => "
+            line += event.result + " ++ "
+            line += event.ja + " -- "
+            line += event.nein
+            eventsList << line
+        }
+
+        return eventsList
+    }
+
+    def fullTable() {
         def eventsList = []
 
         def columns = [:]
@@ -70,7 +87,7 @@ class Events {
         return eventsList
     }
 
-    def dumpEvents() {
-        getSerializedEvents().each { println it }
+    def toLines() {
+        return Config.minTable ? minimalTable() : fullTable()
     }
 }

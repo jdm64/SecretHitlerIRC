@@ -157,8 +157,8 @@ class IRCGame extends Game {
     }
 
     def printEvents() {
-        events.getSerializedEvents().each { event ->
-            messageGroup(event)
+        events.toLines().each { line ->
+            messageGroup(line)
         }
     }
 }

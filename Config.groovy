@@ -4,6 +4,7 @@ class Config {
     static boolean debug = Boolean.getBoolean("debug")
     static boolean autoelect = Boolean.getBoolean("autoelect")
     static boolean voicing = Boolean.getBoolean("voicing")
+    static boolean minTable = Boolean.getBoolean("minTable")
 
     static String server = System.getProperty("server", "skynet.parasoft.com")
     static String debugUser = System.getProperty("debugUser", "dan")

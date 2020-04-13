@@ -502,6 +502,6 @@ class Game {
     }
 
     def printEvents() {
-        events.dumpEvents()
+        events.toLines().each { println it }
     }
 }
