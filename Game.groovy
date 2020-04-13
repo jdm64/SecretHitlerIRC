@@ -439,9 +439,17 @@ class Game {
 
     def inspect(president) {
         messageGroup("Waiting for President $president to decide whom to inspect.")
-        def response = questionPlayer(president, "Whom do you wish to inspect? $players")
-        while (!players.contains(response)) {
-            response = questionPlayer(president, "$response is not a recognized user. Choose a player to inspect. ")
+        def validPlayers = players - president
+        def response
+        while (true) {
+            response = questionPlayer(president, "Whom do you wish to inspect? $validPlayers")
+            if (president == response) {
+                messagePlayer(president, "You can't inspect yourself!")
+            } else if (!players.contains(response)) {
+                messagePlayer(president, "$response is not a recognized user")
+            } else {
+                break
+            }
         }
         messageGroup("President $president to inspect the party membership of $response")
         def role = roles.get(response) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
@@ -468,9 +476,17 @@ class Game {
     def execute(president) {
         messageGroup("President $president will now choose a player to execute.")
         // President to choose a player to execute
-        def response = questionPlayer(president, "Choose a player to execute. ")
-        while (response == president || !players.contains(response)) {
-            response = questionPlayer(president, "$response is not a recognized user, or you tried to kill yourself. Choose a player to execute. ")
+        def validPlayers = players - president
+        def response
+        while (true) {
+            response = questionPlayer(president, "Choose a player to execute. $validPlayers")
+            if (president == response) {
+                messagePlayer(president, "You can't kill yourself")
+            } else if (!players.contains(response)) {
+                messagePlayer(president, "$response is not a recognized user")
+            } else {
+                break
+            }
         }
         if (kill(response)) {
             return true
