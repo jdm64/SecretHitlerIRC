@@ -30,21 +30,47 @@ class Game {
         }
 
         libEnacted = 0
-        facEnacted = 0
+        facEnacted = (Config.rebalance && names.size() == 6) ? 1 : 0
         failedElection = 0
         drawPile = []
         discardPile = []
         lastElected = []
         cnhList = []
         events = new Events()
+
         // Fill draw pile
         1.upto(6, {
             drawPile << Policy.LIBERAL
         })
-        1.upto(11, {
+        def numRed = 11
+        if (Config.rebalance) {
+            if (names.size() == 7) {
+                numRed = 10
+            } else if (names.size()) {
+                numRed = 9
+            }
+        }
+        1.upto(numRed, {
             drawPile << Policy.FASCIST
         })
         Collections.shuffle(drawPile)
+
+        if (Config.rebalance) {
+            messageGroup("Rebalanced rules enabled")
+            switch (names.size()) {
+            case 6:
+                messageGroup("Game starts with a fascist policy already enacted")
+                break
+            case 7:
+                messageGroup("Policy deck has 10 fascist policies instead of 11")
+                break
+            case 9:
+                messageGroup("Policy deck has 9 fascist policies instead of 11")
+                break
+            default:
+                messageGroup("No game changes at this player count")
+            }
+        }
 
         // Assign roles to players
         numPlayers = names.size()
