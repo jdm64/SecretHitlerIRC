@@ -110,16 +110,12 @@ class IRCGame extends Game {
         }
     }
 
-    def electGovernment(president, chancellor) {
-        if (Config.autoelect) {
-            return true
-        } else {
-            def elected = super.electGovernment(president, chancellor)
-            if (elected) {
-                takeVoice([president, chancellor])
-            }
-            return elected
+    def electGovernment(event, president, chancellor) {
+        def elected = super.electGovernment(event, president, chancellor)
+        if (elected) {
+            takeVoice([president, chancellor])
         }
+        return elected
     }
 
     def kill(user) {
