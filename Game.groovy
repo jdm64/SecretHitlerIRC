@@ -166,7 +166,9 @@ class Game {
     def beginPlay() {
         messageGroup("Let's start")
         while (true) {
-            if (playRound()) {
+            def gameOver = playRound()
+            roundEnd()
+            if (gameOver) {
                 break
             } else {
                 printEvents()
@@ -187,11 +189,9 @@ class Game {
         messageGroup(printPlayers())
         def president = players[currentPresident]
         if (presidentStart(president)) {
-            roundEnd()
             return true
         }
         currentPresident = ++currentPresident % players.size()
-        roundEnd()
         return false
     }
 
