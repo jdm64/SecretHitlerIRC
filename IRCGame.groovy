@@ -69,6 +69,7 @@ class IRCGame extends Game {
     def giveVoice() {
         giveVoice(null)
     }
+
     def giveVoice(names) {
         if (Config.voicing) {
             channel.users.each { user ->
@@ -91,7 +92,7 @@ class IRCGame extends Game {
                     channel.send().deVoice(user)
                 }
             }
-        devoiced = names
+            devoiced = names
         }
     }
 
