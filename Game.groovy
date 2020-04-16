@@ -136,7 +136,9 @@ class Game {
     }
 
     def endGame() {
-        messageGroup(roles)
+        roles.each {
+            messageGroup("${it.key} was ${it.value}")
+        }
     }
 
     def printPlayers() {
@@ -165,20 +167,19 @@ class Game {
         messageGroup("Let's start")
         while (true) {
             if (playRound()) {
-                return
+                break
             } else {
                 printEvents()
             }
             if (libEnacted == 5) {
                 messageGroup("Liberals win by enacting 5 liberal policies")
-                endGame()
-                return
+                break
             } else if (facEnacted == 6) {
                 messageGroup("Fascists win by enacting 6 fascist policies")
-                endGame()
-                return
+                break
             }
         }
+        endGame()
     }
 
     // Return true if the game is over
@@ -265,7 +266,6 @@ class Game {
             if (facEnacted >= 3) {
                 if (roles.get(chancellor) == Role.HITLER) {
                     messageGroup("The fascists win! Hitler has been elected chancellor.")
-                    endGame()
                     return true
                 } else {
                     cnhList << chancellor
@@ -532,7 +532,6 @@ class Game {
         messageGroup("$user is dead")
         if (roles.get(user) == Role.HITLER) {
             messageGroup("Hitler has been executed. Liberals win!")
-            endGame()
             return true
         }
         return false
