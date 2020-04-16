@@ -170,11 +170,11 @@ class Game {
                 printEvents()
             }
             if (libEnacted == 5) {
-                messageGroup "Liberals win by enacting 5 liberal policies"
+                messageGroup("Liberals win by enacting 5 liberal policies")
                 endGame()
                 return
             } else if (facEnacted == 6) {
-                messageGroup "Fascists win by enacting 6 fascist policies"
+                messageGroup("Fascists win by enacting 6 fascist policies")
                 endGame()
                 return
             }
