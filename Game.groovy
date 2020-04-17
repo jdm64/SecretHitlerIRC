@@ -29,6 +29,7 @@ class Game {
             return false
         }
 
+        currentPresident = 0
         libEnacted = 0
         facEnacted = (Config.rebalance && names.size() == 6) ? 1 : 0
         failedElection = 0
