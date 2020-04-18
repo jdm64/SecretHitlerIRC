@@ -99,6 +99,8 @@ class Game {
             roles << [(it): Role.LIBERAL]
         }
 
+        messageGroup(" ")
+
         Collections.shuffle(players)
         players.eachWithIndex { player, index ->
             if (roles[player] == Role.LIBERAL) {
@@ -167,6 +169,7 @@ class Game {
     }
 
     def beginPlay() {
+        messageGroup(" ")
         messageGroup("Let's start")
         while (true) {
             def gameOver = playRound()
@@ -573,6 +576,8 @@ class Game {
     }
 
     def printEvents() {
-        events.toLines().each { println it }
+        messageGroup(" ")
+        events.toLines().each { messageGroup(it) }
+        messageGroup(" ")
     }
 }
