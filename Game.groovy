@@ -432,9 +432,10 @@ class Game {
 
         def event = new Event()
         events.addEvent(event)
-        event.president = ""
-        event.chancellor = ""
-        event.result = "Top Card: $policy"
+        event.president = " "
+        event.chancellor = " "
+        event.result = policy
+        event.votes = "Top Card"
     }
 
     def specialAction(president) {
