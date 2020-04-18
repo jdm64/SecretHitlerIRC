@@ -323,14 +323,20 @@ class Game {
         try {
             players.each { player ->
                 futures << threadPool.submit({
-                    def response = questionPlayer(player, "Do you approve of a government of $president and $chancellor ? [Ja, Nein]? ")
-                    response = response.toLowerCase()
-                    if (response == "j" || response == "ja" || response.startsWith("y")) {
-                        elected.getAndIncrement()
-                        votingRecord << [(player): true]
-                    } else {
-                        elected.getAndDecrement()
-                        votingRecord << [(player): false]
+                    while (true) {
+                        def response = questionPlayer(player, "Do you approve of a government of $president and $chancellor ? [Ja, Nein]? ")
+                        response = response.toLowerCase()
+                        if (["j", "ja", "y"].contains(response)) {
+                            elected.getAndIncrement()
+                            votingRecord << [(player): true]
+                            return
+                        } else if (["n", "nein"].contains(response)) {
+                            elected.getAndDecrement()
+                            votingRecord << [(player): false]
+                            return
+                        } else {
+                            messagePlayer(player, "What? I didn't catch that.")
+                        }
                     }
                 } as Callable)
             }
