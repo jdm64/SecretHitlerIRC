@@ -1,7 +1,4 @@
-// https://mvnrepository.com/artifact/org.pircbotx/pircbotx
-@Grab(group='org.pircbotx', module='pircbotx', version='2.1')
 
-import org.pircbotx.Colors
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 
@@ -150,7 +147,7 @@ class Game {
         def message = "Players ["
         players.eachWithIndex { player, index ->
             if (index == currentPresident) {
-                message += Colors.BOLD + player + Colors.NORMAL
+                message += "$ColorCode.BOLD$player$ColorCode.NORMAL"
             } else if (lastElected.contains(player) && cnhList.contains(player)) {
                 message += "*+$player+*"
             } else if (lastElected.contains(player)) {
