@@ -323,7 +323,7 @@ class Game {
         try {
             players.each { player ->
                 futures << threadPool.submit({
-                    def response = questionPlayer(player, "Do you approve of a governemnt of $president and $chancellor ? [Ja, Nein]? ")
+                    def response = questionPlayer(player, "Do you approve of a government of $president and $chancellor ? [Ja, Nein]? ")
                     response = response.toLowerCase()
                     if (response == "j" || response == "ja" || response.startsWith("y")) {
                         elected.getAndIncrement()
