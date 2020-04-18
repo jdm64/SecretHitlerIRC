@@ -415,11 +415,11 @@ class Game {
     }
 
     def topCard() {
+        reshuffle()
+
+        def policy = drawPile.pop()
         messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
-
-        reshuffle()
-        def policy = drawPile.pop()
 
         if (policy == Policy.LIBERAL) {
             libEnacted++
