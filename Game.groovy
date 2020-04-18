@@ -305,10 +305,10 @@ class Game {
 
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
-            event.ja = players
-            event.nein = ""
+            event.votes = "${players.size()},Ja$players 0,Nein[]"
             return true
         }
+
         def threadPool
         if (Config.debug) {
             threadPool = Executors.newFixedThreadPool(1)
@@ -339,9 +339,18 @@ class Game {
         }
         futures.each{it.get()}
 
-        event.ja = votingRecord.findAll{it.value}.collect{it.key}.sort()
-        event.nein = votingRecord.findAll{!it.value}.collect{it.key}.sort()
-        messageGroup("The results are: Ja$event.ja Nein$event.nein")
+        def ja = []
+        def nein = []
+        players.each {
+            if (votingRecord[it]) {
+                ja << it
+            } else {
+                nein << it
+            }
+        }
+
+        event.votes = "${ja.size()},Ja$ja ${nein.size()},Nein$nein"
+        messageGroup("The results are: $event.votes")
         return elected.get() > 0
     }
 

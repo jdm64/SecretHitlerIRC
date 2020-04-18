@@ -21,14 +21,13 @@ class Events {
     def minimalTable() {
         def eventsList = []
 
-        eventsList << "President > Chancellor => Result ++ Ja -- Nein"
+        eventsList << "President > Chancellor => Result || Votes"
 
         events.each { event ->
             def line = event.president + " > "
             line += event.chancellor + " => "
-            line += event.result + " ++ "
-            line += event.ja + " -- "
-            line += event.nein
+            line += event.result + " || "
+            line += event.votes
             eventsList << line
         }
 
@@ -39,7 +38,7 @@ class Events {
         def eventsList = []
 
         def columns = [:]
-        ["Round", "President", "Chancellor", "Result", "Ja", "Nein"].each{ i -> columns << [(i): i.size()] }
+        ["Round", "President", "Chancellor", "Result", "Votes"].each{ i -> columns << [(i): i.size()] }
 
         events.each { event ->
             columns.President = Math.max(columns.President, event.president.size())
@@ -50,9 +49,7 @@ class Events {
             def resSize = (result.contains("LIBERAL") || result.contains("FASCIST")) ? 7 : result.size()
             columns.Result = Math.max(columns.Result, resSize)
 
-            // brackets will be removed so minus 2
-            columns.Ja = Math.max(columns.Ja, event.ja.size() - 2)
-            columns.Nein = Math.max(columns.Nein, event.nein.size() - 2)
+            columns.Votes = Math.max(columns.Votes, event.votes.size())
         }
 
         // add size for space on either side
@@ -77,9 +74,7 @@ class Events {
                 line += event.result.center(columns.Result)
             }
             line += "|"
-            line += (event.ja.size() > 2 ? event.ja[1..-2] : " ").center(columns.Ja)
-            line += "|"
-            line += (event.nein.size() > 2 ? event.nein[1..-2] : " ").center(columns.Nein)
+            line += event.votes.center(columns.Votes)
             line += "|"
             eventsList << line
         }
