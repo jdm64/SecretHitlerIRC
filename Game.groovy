@@ -13,6 +13,7 @@ class Game {
     List drawPile
     List discardPile
     List lastElected
+    List inspected
     List cnhList
     int currentPresident
     int libEnacted
@@ -36,6 +37,7 @@ class Game {
         drawPile = []
         discardPile = []
         lastElected = []
+        inspected = []
         cnhList = []
         events = new Events()
 
@@ -480,7 +482,7 @@ class Game {
 
     def inspect(president) {
         messageGroup("Waiting for President $president to decide whom to inspect.")
-        def validPlayers = players - president
+        def validPlayers = players - president - inspected
         def response
         while (true) {
             response = questionPlayer(president, "Whom do you wish to inspect? $validPlayers")
@@ -488,10 +490,13 @@ class Game {
                 messagePlayer(president, "You can't inspect yourself!")
             } else if (!players.contains(response)) {
                 messagePlayer(president, "$response is not a recognized user")
+            } else if (inspected.contains(response)) {
+                messagePlayer(president, "$response has already been inspect once")
             } else {
                 break
             }
         }
+        inspected << response
         messageGroup("President $president to inspect the party membership of $response")
         def role = roles.get(response) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
         messagePlayer(president, "$response is a $role")
