@@ -4,9 +4,9 @@
 import org.pircbotx.Colors
 
 enum ColorCode {
-    RED(Boolean.getBoolean("console") ? "\033[31m" : Colors.RED),
-    BLUE(Boolean.getBoolean("console") ? "\033[34m" : Colors.BLUE),
-    NORMAL(Boolean.getBoolean("console") ? "\033[0m" : Colors.NORMAL)
+    RED(Config.console ? "\033[31m" : Colors.RED),
+    BLUE(Config.console ? "\033[34m" : Colors.BLUE),
+    NORMAL(Config.console ? "\033[0m" : Colors.NORMAL)
 
     String str
 

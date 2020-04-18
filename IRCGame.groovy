@@ -57,7 +57,7 @@ class IRCGame extends Game {
             .setName(Config.botName)
             .addServer(Config.server)
             .addListener(listener)
-            .addAutoJoinChannel(Config.channelName)
+            .addAutoJoinChannel(Config.channel)
             .setMessageDelay(10)
             .buildConfiguration()
         bot = new PircBotX(config)
