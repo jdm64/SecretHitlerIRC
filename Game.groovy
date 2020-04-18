@@ -375,14 +375,14 @@ class Game {
         if (policy == Policy.LIBERAL) {
             libEnacted++
             messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
-            reshuffle()
         } else if (policy == Policy.FASCIST) {
             facEnacted++
             messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
-            reshuffle()
-            if (specialAction(president)) {
-                return true
-            }
+        }
+
+        reshuffle()
+        if (policy == Policy.FASCIST && specialAction(president)) {
+            return true
         }
         return false
     }
