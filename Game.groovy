@@ -210,9 +210,9 @@ class Game {
     }
 
     def nominateChancellor(president) {
-        messagePlayer(president, printPlayers())
+        def valid = players - president - lastElected
         while (true) {
-            def chancellor = questionPlayer(president, "Who is your nominee for chancellor?")
+            def chancellor = questionPlayer(president, "Who is your nominee for chancellor? $valid")
             if (!players.contains(chancellor)) {
                 messagePlayer(president, "Who? I don't know ${chancellor}.")
             } else if (president == chancellor) {
