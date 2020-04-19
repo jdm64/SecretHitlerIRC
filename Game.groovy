@@ -363,7 +363,7 @@ class Game {
     }
 
     def drawPolicies() {
-        return [drawPile.pop(), drawPile.pop(), drawPile.pop()]
+        return [drawPile.remove(0), drawPile.remove(0), drawPile.remove(0)]
     }
 
     def discardPolicy(policy) {
@@ -419,7 +419,7 @@ class Game {
     def topCard() {
         reshuffle()
 
-        def policy = drawPile.pop()
+        def policy = drawPile.remove(0)
         messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
 
