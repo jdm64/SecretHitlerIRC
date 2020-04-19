@@ -148,24 +148,27 @@ class Game {
     }
 
     def printPlayers() {
-        def message = "Players ["
+        def message = "Players [ "
         players.eachWithIndex { player, index ->
+            if (lastElected.contains(player)) {
+                message += "*"
+            }
+
+            if (cnhList.contains(player)) {
+                message += "+"
+            }
+
             if (index == currentPresident) {
                 message += "$ColorCode.BOLD$player$ColorCode.NORMAL"
-            } else if (lastElected.contains(player) && cnhList.contains(player)) {
-                message += "*+$player+*"
-            } else if (lastElected.contains(player)) {
-                message += "*$player*"
-            }  else if (cnhList.contains(player)) {
-                message += "+$player+"
             } else {
                 message += player
             }
+
             if (index < players.size()-1) {
                 message += ", "
             }
         }
-        message += "] (* = incumbent, + = cnh)"
+        message += " ] (* = incumbent, + = cnh)"
         return message
     }
 
