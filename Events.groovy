@@ -21,7 +21,7 @@ class Events {
     def minimalTable() {
         def eventsList = []
 
-        eventsList << "President > Chancellor => Result || Votes"
+        eventsList << "President > Chancellor => Result || Ja -- Nein"
 
         events.each { event ->
             def line = event.president + " > "
