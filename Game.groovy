@@ -39,9 +39,6 @@ class Game {
         events = new Events()
 
         // Fill draw pile
-        1.upto(6, {
-            drawPile << Policy.LIBERAL
-        })
         def numRed = 11
         if (Config.rebalance) {
             if (names.size() == 7) {
@@ -52,6 +49,13 @@ class Game {
         }
         1.upto(numRed, {
             drawPile << Policy.FASCIST
+        })
+        if (Config.rebalance && names.size() == 6) {
+            drawPile.remove(0)
+        }
+
+        1.upto(6, {
+            drawPile << Policy.LIBERAL
         })
         Collections.shuffle(drawPile)
 
