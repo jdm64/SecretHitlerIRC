@@ -218,20 +218,29 @@ class Game {
         return false
     }
 
-    def nominateChancellor(president) {
-        def valid = players - president - lastElected
+    def askPlayerName(askPlayer, question, invalidName) {
         while (true) {
-            def chancellor = questionPlayer(president, "Who is your nominee for chancellor? $valid")
-            if (!players.contains(chancellor)) {
-                messagePlayer(president, "Who? I don't know ${chancellor}.")
-            } else if (president == chancellor) {
-                messagePlayer(president, "This isn't a monarchy.")
-            } else if (lastElected.contains(chancellor)) {
-                messagePlayer(president, "${chancellor} is incumbent.")
+            def name = questionPlayer(askPlayer, question).trim()
+            if (!players.contains(name)) {
+                messagePlayer(askPlayer, "Invalid player name: $name")
+            } else if (askPlayer == name) {
+                messagePlayer(askPlayer, "Cannot select yourself.")
             } else {
-                return chancellor
+                def invalidMsg = invalidName(name)
+                if (invalidMsg) {
+                    messagePlayer(askPlayer, invalidMsg)
+                } else {
+                    return name
+                }
             }
         }
+    }
+
+    def nominateChancellor(president) {
+        def valid = players - president - lastElected
+        return askPlayerName(president, "Who is your nominee for chancellor? $valid", { chancellor ->
+            return lastElected.contains(chancellor) ? "${chancellor} is incumbent." : null
+        })
     }
 
     def askPresidentDiscard(president, policies) {
@@ -492,45 +501,27 @@ class Game {
 
     def inspect(president) {
         messageGroup("Waiting for President $president to decide whom to inspect.")
+
         def validPlayers = players - president - inspected
-        def response
-        while (true) {
-            response = questionPlayer(president, "Whom do you wish to inspect? $validPlayers")
-            if (president == response) {
-                messagePlayer(president, "You can't inspect yourself!")
-            } else if (!players.contains(response)) {
-                messagePlayer(president, "$response is not a recognized user")
-            } else if (inspected.contains(response)) {
-                messagePlayer(president, "$response has already been inspect once")
-            } else {
-                break
-            }
-        }
-        inspected << response
-        messageGroup("President $president to inspect the party membership of $response")
-        def role = roles.get(response) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
-        messagePlayer(president, "$response is a $role")
+        def inspectPlayer = askPlayerName(president, "Whom do you wish to inspect? $validPlayers", { player ->
+            return inspected.contains(player) ? "$player has already been inspect once" : null
+        })
+
+        inspected << inspectPlayer
+        messageGroup("President $president to inspect the party membership of $inspectPlayer")
+        def role = roles.get(inspectPlayer) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
+        messagePlayer(president, "$inspectPlayer is a $role")
     }
 
     def specialElection(president) {
         printEvents()
         messageGroup("Special Election. Waiting for President $president to nominate the next president.")
         def validPlayers = players - president
-        def response
-        while (true) {
-            response = questionPlayer(president, "Whom do you wish to nominate as the next president? $validPlayers")
-            if (president == response) {
-                messagePlayer(president, "You cannot nominate yourself")
-            } else if (!players.contains(response)) {
-                messagePlayer(president, "$response is not a recognized user.")
-            } else {
-                break
-            }
-        }
-        messageGroup("President $president nominates $response to be the next president.")
+        def nextPrez = askPlayerName(president, "Whom do you wish to nominate as the next president? $validPlayers" { player -> null })
+        messageGroup("President $president nominates $nextPrez to be the next president.")
         def backupLastElected = lastElected
         lastElected = []
-        def result = presidentStart(response)
+        def result = presidentStart(nextPrez)
         if (lastElected.isEmpty()) {
             lastElected = backupLastElected
         }
@@ -541,18 +532,9 @@ class Game {
         messageGroup("President $president will now choose a player to execute.")
         // President to choose a player to execute
         def validPlayers = players - president
-        def response
-        while (true) {
-            response = questionPlayer(president, "Choose a player to execute. $validPlayers")
-            if (president == response) {
-                messagePlayer(president, "You can't kill yourself")
-            } else if (!players.contains(response)) {
-                messagePlayer(president, "$response is not a recognized user")
-            } else {
-                break
-            }
-        }
-        if (kill(response)) {
+        def killPlayer = askPlayerName(president, "Choose a player to execute. $validPlayers", { player -> null })
+
+        if (kill(killPlayer)) {
             return true
         }
         currentPresident = players.indexOf(president)
