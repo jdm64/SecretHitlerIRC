@@ -368,7 +368,7 @@ class Game {
         event.votes += " -- "
         event.votes += nein.size() ? nein.toString()[1..-2] : "@"
 
-        messageGroup("The results are: Ja$ja Nein$nein")
+        messageGroup("The results are: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")
         return elected.get() > 0
     }
 
