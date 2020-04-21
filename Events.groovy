@@ -38,7 +38,7 @@ class Events {
         def eventsList = []
 
         def columns = [:]
-        ["Round", "President", "Chancellor", "Result", "Ja -- Nein"].each{ i -> columns << [(i): i.size()] }
+        ["Round", "President", "Chancellor", "Result", "Votes"].each{ i -> columns << [(i): i.size()] }
 
         events.each { event ->
             columns.President = Math.max(columns.President, event.president.size())
