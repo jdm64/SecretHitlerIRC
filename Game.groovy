@@ -395,11 +395,11 @@ class Game {
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy == Policy.LIBERAL) {
             libEnacted++
-            messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
         } else if (policy == Policy.FASCIST) {
             facEnacted++
-            messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
         }
+
+        messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
 
         reshuffle()
         if (policy == Policy.FASCIST && specialAction(president)) {
