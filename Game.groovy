@@ -314,7 +314,7 @@ class Game {
 
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
-            event.votes = "${players.size()},Ja$players 0,Nein[]"
+            event.votes = "$players -- @"
             return true
         }
 
