@@ -323,7 +323,7 @@ class Game {
 
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
-            event.votes = "$players -- @"
+            event.votes = players.toString()[1..-2] + " -- @"
             return true
         }
 
