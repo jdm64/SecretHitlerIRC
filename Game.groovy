@@ -43,7 +43,7 @@ class Game {
         if (Config.rebalance) {
             if (names.size() == 7) {
                 numRed = 10
-            } else if (names.size()) {
+            } else if (names.size() == 9) {
                 numRed = 9
             }
         }
