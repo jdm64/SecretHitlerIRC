@@ -100,6 +100,10 @@ class Game {
             roles << [(it): Role.LIBERAL]
         }
 
+
+        messageGroup("Draw pile: ${drawPile.count(Policy.LIBERAL)} $Policy.LIBERAL and ${drawPile.count(Policy.FASCIST)} $Policy.FASCIST")
+        def roleVals = roles.values()
+        messageGroup("Players: ${roleVals.count(Role.LIBERAL)} $Role.LIBERAL, ${roleVals.count(Role.FASCIST)} $Role.FASCIST and ${roleVals.count(Role.HITLER)} $Role.HITLER")
         messageGroup(" ")
 
         Collections.shuffle(players)
