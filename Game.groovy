@@ -517,7 +517,7 @@ class Game {
         printEvents()
         messageGroup("Special Election. Waiting for President $president to nominate the next president.")
         def validPlayers = players - president
-        def nextPrez = askPlayerName(president, "Whom do you wish to nominate as the next president? $validPlayers" { player -> null })
+        def nextPrez = askPlayerName(president, "Whom do you wish to nominate as the next president? $validPlayers", { player -> null })
         messageGroup("President $president nominates $nextPrez to be the next president.")
         def backupLastElected = lastElected
         lastElected = []
