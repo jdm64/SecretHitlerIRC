@@ -58,6 +58,7 @@ class Game {
             drawPile << Policy.LIBERAL
         })
         Collections.shuffle(drawPile)
+        Collections.shuffle(drawPile) // double shuffle
 
         if (Config.rebalance) {
             messageGroup("Rebalanced rules enabled")
@@ -107,6 +108,7 @@ class Game {
         messageGroup(" ")
 
         Collections.shuffle(players)
+        Collections.shuffle(players) // double shuffle
         players.eachWithIndex { player, index ->
             if (roles[player] == Role.LIBERAL) {
                 messagePlayer(player, "You are a ${roles[player]}")
@@ -420,6 +422,7 @@ class Game {
         drawPile.addAll(discardPile)
         discardPile.clear()
         Collections.shuffle(drawPile)
+        Collections.shuffle(drawPile) // double shuffle
     }
 
     def veto(president, chancellor) {
