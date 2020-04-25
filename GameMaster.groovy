@@ -36,4 +36,24 @@ abstract class GameMaster {
             messagePlayer(player, msg)
         }
     }
+
+    def tellPlayerOrder(players, currentPresident, lastElected, cnhList) {
+        messageGroup("Players [ " + players.withIndex().collect { player, index ->
+            def str = ""
+            if (lastElected.contains(player)) {
+                str += "*"
+            }
+
+            if (cnhList.contains(player)) {
+                str += "+"
+            }
+
+            if (index == currentPresident) {
+                str += "$ColorCode.BOLD$player$ColorCode.NORMAL"
+            } else {
+                str += player
+            }
+            return str
+        }.join(", ") + " ] (* = incumbent, + = cnh)")
+    }
 }

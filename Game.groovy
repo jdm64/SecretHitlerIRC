@@ -113,26 +113,6 @@ class Game {
         }
     }
 
-    def printPlayers() {
-        return "Players [ " + players.withIndex().collect { player, index ->
-            def str = ""
-            if (lastElected.contains(player)) {
-                str += "*"
-            }
-
-            if (cnhList.contains(player)) {
-                str += "+"
-            }
-
-            if (index == currentPresident) {
-                str += "$ColorCode.BOLD$player$ColorCode.NORMAL"
-            } else {
-                str += player
-            }
-            return str
-        }.join(", ") + " ] (* = incumbent, + = cnh)"
-    }
-
     def beginPlay() {
         messageGroup(" ")
         messageGroup("Let's start")
@@ -157,7 +137,7 @@ class Game {
 
     // Return true if the game is over
     def playRound() {
-        messageGroup(printPlayers())
+        gm.tellPlayerOrder(players, currentPresident, lastElected, cnhList)
         def president = players[currentPresident]
         if (presidentStart(president)) {
             return true
