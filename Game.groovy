@@ -27,38 +27,9 @@ class Game {
             return false
         }
 
-        currentPresident = 0
-        libEnacted = 0
-        facEnacted = (Config.rebalance && names.size() == 6) ? 1 : 0
-        failedElection = 0
-        drawPile = []
-        discardPile = []
-        lastElected = []
-        inspected = []
-        cnhList = []
-        events = new Events()
-
-        // Fill draw pile
-        def numRed = 11
-        if (Config.rebalance) {
-            if (names.size() == 7) {
-                numRed = 10
-            } else if (names.size() == 9) {
-                numRed = 9
-            }
-        }
-        1.upto(numRed, {
-            drawPile << Policy.FASCIST
-        })
-        if (Config.rebalance && names.size() == 6) {
-            drawPile.remove(0)
-        }
-
-        1.upto(6, {
-            drawPile << Policy.LIBERAL
-        })
-        Collections.shuffle(drawPile)
-        Collections.shuffle(drawPile) // double shuffle
+        clearState()
+        setupDeck()
+        assignRoles(names)
 
         if (Config.rebalance) {
             messageGroup("Rebalanced rules enabled")
@@ -77,38 +48,11 @@ class Game {
             }
         }
 
-        // Assign roles to players
-        numPlayers = names.size()
-        players = new ArrayList(names)
-        Collections.shuffle(names)
-        roles = [:]
-        roles << [(names.pop()): Role.HITLER]
-        switch (names.size()) {
-            case 8:
-            case 9:
-                roles << [(names.pop()): Role.FASCIST]
-                /* fall through */
-            case 6:
-            case 7:
-                roles << [(names.pop()): Role.FASCIST]
-                /* fall through */
-            case 4:
-            case 5:
-                roles << [(names.pop()): Role.FASCIST]
-                break;
-        }
-        names.each {
-            roles << [(it): Role.LIBERAL]
-        }
-
-
         messageGroup("Draw pile: ${drawPile.count(Policy.LIBERAL)} $Policy.LIBERAL and ${drawPile.count(Policy.FASCIST)} $Policy.FASCIST")
         def roleVals = roles.values()
         messageGroup("Players: ${roleVals.count(Role.LIBERAL)} $Role.LIBERAL, ${roleVals.count(Role.FASCIST)} $Role.FASCIST and ${roleVals.count(Role.HITLER)} $Role.HITLER")
         messageGroup(" ")
 
-        Collections.shuffle(players)
-        Collections.shuffle(players) // double shuffle
         players.eachWithIndex { player, index ->
             if (roles[player] == Role.LIBERAL) {
                 messagePlayer(player, "You are a ${roles[player]}")
@@ -145,6 +89,72 @@ class Game {
         beginPlay()
 
         return true
+    }
+
+    def clearState() {
+        currentPresident = 0
+        libEnacted = 0
+        facEnacted = 0
+        failedElection = 0
+        drawPile = []
+        discardPile = []
+        lastElected = []
+        inspected = []
+        cnhList = []
+        events = new Events()
+    }
+
+    def setupDeck() {
+        def numRed = 11
+        if (Config.rebalance) {
+            if (numPlayers == 7) {
+                numRed = 10
+            } else if (numPlayers == 9) {
+                numRed = 9
+            }
+        }
+        1.upto(numRed, {
+            drawPile << Policy.FASCIST
+        })
+        if (Config.rebalance && numPlayers == 6) {
+            drawPile.remove(0)
+            facEnacted = 1
+        }
+
+        1.upto(6, {
+            drawPile << Policy.LIBERAL
+        })
+
+        Collections.shuffle(drawPile)
+        Collections.shuffle(drawPile) // double shuffle
+    }
+
+    def assignRoles(names) {
+        numPlayers = names.size()
+        def namesCopy = new ArrayList(names)
+        Collections.shuffle(namesCopy)
+        Collections.shuffle(namesCopy) // double shuffle
+        players = new ArrayList(namesCopy)
+
+        roles = [:]
+        roles << [(namesCopy.pop()): Role.HITLER]
+        switch (numPlayers) {
+        case 10:
+        case 9:
+            roles << [(namesCopy.pop()): Role.FASCIST]
+            /* fall through */
+        case 8:
+        case 7:
+            roles << [(namesCopy.pop()): Role.FASCIST]
+            /* fall through */
+        case 6:
+        case 5:
+            roles << [(namesCopy.pop()): Role.FASCIST]
+            break;
+        }
+        namesCopy.each {
+            roles << [(it): Role.LIBERAL]
+        }
     }
 
     def endGame() {
