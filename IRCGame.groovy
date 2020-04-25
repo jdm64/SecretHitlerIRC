@@ -25,11 +25,10 @@ class IRCGame extends Game {
                 switch (command.trim().toLowerCase()) {
                     case "start":
                         channel = event.channel
-                        def users = channel.usersNicks
                         if (Config.debug) {
                             startGame(["one", "two", "three", "four", "five"])
                         } else {
-                            startGame(new ArrayList(users - Config.botName))
+                            startGame(channel.usersNicks - Config.botName)
                         }
                         break;
                 }
