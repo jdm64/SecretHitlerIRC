@@ -249,7 +249,7 @@ class Game {
         while (!isNumberInRange(response, 1, 3)) {
             response = questionPlayer(president, "Please choose a number between 1 and 3")
         }
-        return response
+        return response as int
     }
 
     def askChancellorDiscard(chancellor, policies, vetoEnabled) {
@@ -262,7 +262,7 @@ class Game {
         while (!isNumberInRange(response, min, 2)) {
             response = questionPlayer(chancellor, "Please choose a number between $min and 2")
         }
-        return response
+        return response as int
     }
 
     def presidentStart(president) {
@@ -293,16 +293,16 @@ class Game {
             }
 
             def policies = drawPolicies()
-            def discard = askPresidentDiscard(president, policies) as int
+            def discard = askPresidentDiscard(president, policies)
             discardPolicy(policies.removeAt(discard - 1))
-            discard = askChancellorDiscard(chancellor, policies, facEnacted == 5) as int
+            discard = askChancellorDiscard(chancellor, policies, facEnacted == 5)
             if (discard == 0) {
                 // Move to veto
                 if (veto(president, chancellor)) {
                     event.result = "Veto"
                     return false
                 }
-                discard = askChancellorDiscard(chancellor, policies, false) as int
+                discard = askChancellorDiscard(chancellor, policies, false)
             }
             discardPolicy(policies.removeAt(discard - 1))
 
