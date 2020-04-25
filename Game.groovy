@@ -17,13 +17,15 @@ class Game {
     int facEnacted
     int failedElection
     Events events
+    GameMaster gm
 
-    def startGame(names) {
+    def startGame(gameMaster, names) {
+        gm = gameMaster
         if (names.size() < 5) {
-            messageGroup("Not enough players to start, need at least 5.")
+            gm.messageGroup("Not enough players to start, need at least 5.")
             return false
         } else if (names.size() > 10) {
-            messageGroup("Too many players to start, maximum is 10.")
+            gm.messageGroup("Too many players to start, maximum is 10.")
             return false
         }
 
@@ -31,60 +33,8 @@ class Game {
         setupDeck()
         assignRoles(names)
 
-        if (Config.rebalance) {
-            messageGroup("Rebalanced rules enabled")
-            switch (names.size()) {
-            case 6:
-                messageGroup("Game starts with a fascist policy already enacted")
-                break
-            case 7:
-                messageGroup("Policy deck has 10 fascist policies instead of 11")
-                break
-            case 9:
-                messageGroup("Policy deck has 9 fascist policies instead of 11")
-                break
-            default:
-                messageGroup("No game changes at this player count")
-            }
-        }
-
-        messageGroup("Draw pile: ${drawPile.count(Policy.LIBERAL)} $Policy.LIBERAL and ${drawPile.count(Policy.FASCIST)} $Policy.FASCIST")
-        def roleVals = roles.values()
-        messageGroup("Players: ${roleVals.count(Role.LIBERAL)} $Role.LIBERAL, ${roleVals.count(Role.FASCIST)} $Role.FASCIST and ${roleVals.count(Role.HITLER)} $Role.HITLER")
-        messageGroup(" ")
-
-        players.eachWithIndex { player, index ->
-            if (roles[player] == Role.LIBERAL) {
-                messagePlayer(player, "You are a ${roles[player]}")
-            } else if (roles[player] == Role.FASCIST) {
-                def others = []
-                def hitler
-                players.each { other ->
-                    if (other != player && roles[other] == Role.FASCIST) {
-                        others << other
-                    } else if (roles[other] == Role.HITLER) {
-                        hitler = other
-                    }
-                }
-                if (others.isEmpty()) {
-                    messagePlayer(player, "You are a ${roles[player]}, Hitler is ${hitler}")
-                } else {
-                    messagePlayer(player, "You are a ${roles[player]}, the other fascist(s) is/are ${others}, Hitler is ${hitler}")
-                }
-            } else if (roles[player] == Role.HITLER) {
-                if (players.size() < 7) {
-                    def otherFac
-                    players.each { other ->
-                        if (other != player && roles[other] == Role.FASCIST) {
-                            otherFac = other
-                        }
-                    }
-                    messagePlayer(player, "You are ${roles[player]}, the other fascist is ${otherFac}")
-                } else {
-                    messagePlayer(player, "You are ${roles[player]}")
-                }
-            }
-        }
+        gm.tellSetup(roles, drawPile)
+        gm.tellRoles(roles, names.size() < 7)
 
         beginPlay()
 

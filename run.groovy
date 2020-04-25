@@ -1,7 +1,8 @@
 
 if (Config.console) {
     g = new Game()
-    g.startGame(["one", "two", "three", "four", "five", "six", "seven"])
+    def players = ["one", "two", "three", "four", "five", "six", "seven"]
+    g.startGame(new ConsoleGameMaster(), players)
 } else {
     g = new IRCGame()
 }
