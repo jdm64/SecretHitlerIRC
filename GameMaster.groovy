@@ -103,4 +103,8 @@ abstract class GameMaster {
             }
         }
     }
+
+    def electionResults(ja, nein) {
+        messageGroup("The results are: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")
+    }
 }

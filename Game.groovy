@@ -238,6 +238,7 @@ class Game {
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
             event.votes = players.toString()[1..-2] + " || @"
+            gm.electionResults(players, [])
             return true
         }
 
@@ -275,8 +276,8 @@ class Game {
         event.votes = ja.size() ? ja.toString()[1..-2] : "@"
         event.votes += " || "
         event.votes += nein.size() ? nein.toString()[1..-2] : "@"
+        gm.electionResults(ja, nein)
 
-        messageGroup("The results are: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")
         return elected.get() > 0
     }
 
