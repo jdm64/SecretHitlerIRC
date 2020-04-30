@@ -159,31 +159,6 @@ class Game {
         return false
     }
 
-    def askPlayerName(askPlayer, question, invalidName) {
-        while (true) {
-            def name = questionPlayer(askPlayer, question).trim()
-            if (!players.contains(name)) {
-                messagePlayer(askPlayer, "Invalid player name: $name")
-            } else if (askPlayer == name) {
-                messagePlayer(askPlayer, "Cannot select yourself.")
-            } else {
-                def invalidMsg = invalidName(name)
-                if (invalidMsg) {
-                    messagePlayer(askPlayer, invalidMsg)
-                } else {
-                    return name
-                }
-            }
-        }
-    }
-
-    def nominateChancellor(president) {
-        def valid = players - president - lastElected
-        return askPlayerName(president, "Who is your nominee for chancellor? $valid", { chancellor ->
-            return lastElected.contains(chancellor) ? "${chancellor} is incumbent." : null
-        })
-    }
-
     def askPresidentDiscard(president, policies) {
         def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
         while (!isNumberInRange(response, 1, 3)) {
@@ -206,9 +181,7 @@ class Game {
     }
 
     def presidentStart(president) {
-        messageGroup("Waiting for president $president to nominate a chancellor")
-        def chancellor = nominateChancellor(president)
-        messageGroup("President $president, nominates Chancellor $chancellor.")
+        def chancellor = gm.nominateChancellor(president, players, lastElected)
 
         def event = new Event()
         event.president = president

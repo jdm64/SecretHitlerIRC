@@ -56,4 +56,35 @@ abstract class GameMaster {
             return str
         }.join(", ") + " ] (* = incumbent, + = cnh)")
     }
+
+    def askPlayerName(players, askPlayer, question, invalidName) {
+        while (true) {
+            def name = questionPlayer(askPlayer, question).trim()
+            if (!players.contains(name)) {
+                messagePlayer(askPlayer, "Invalid player name: $name")
+            } else if (askPlayer == name) {
+                messagePlayer(askPlayer, "Cannot select yourself.")
+            } else {
+                def invalidMsg = invalidName(name)
+                if (invalidMsg) {
+                    messagePlayer(askPlayer, invalidMsg)
+                } else {
+                    return name
+                }
+            }
+        }
+    }
+
+    def nominateChancellor(president, players, lastElected) {
+        messageGroup("Waiting for president $president to nominate a chancellor")
+
+        def valid = players - president - lastElected
+        def chancellor = askPlayerName(players, president, "Who is your nominee for chancellor? $valid", { nominee ->
+            return lastElected.contains(nominee) ? "${nominee} is incumbent." : null
+        })
+
+        messageGroup("President $president, nominates Chancellor $chancellor. Let's vote on this government.")
+
+        return chancellor
+    }
 }
