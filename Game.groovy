@@ -248,28 +248,13 @@ class Game {
             threadPool = Executors.newFixedThreadPool(players.size())
         }
 
-        messageGroup("Let's vote on the government of President $president, and Chancellor $chancellor")
         def votingRecord = new ConcurrentHashMap()
         def elected = new AtomicInteger()
         def futures = []
         try {
             players.each { player ->
                 futures << threadPool.submit({
-                    while (true) {
-                        def response = questionPlayer(player, "Do you approve of a government of $president and $chancellor ? [Ja, Nein]? ")
-                        response = response.toLowerCase()
-                        if (["j", "ja", "y"].contains(response)) {
-                            elected.getAndIncrement()
-                            votingRecord << [(player): true]
-                            return
-                        } else if (["n", "nein"].contains(response)) {
-                            elected.getAndDecrement()
-                            votingRecord << [(player): false]
-                            return
-                        } else {
-                            messagePlayer(player, "What? I didn't catch that.")
-                        }
-                    }
+                    votingRecord << gm.aproveGovernment(player, president, chancellor, elected)
                 } as Callable)
             }
         } finally {

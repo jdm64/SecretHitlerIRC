@@ -87,4 +87,20 @@ abstract class GameMaster {
 
         return chancellor
     }
+
+    def aproveGovernment(player, president, chancellor, voteCounter) {
+        while (true) {
+            def response = questionPlayer(player, "Do you approve of a government of $president and $chancellor? [Ja, Nein]")
+            response = response.toLowerCase()
+            if (response.startsWith("j") || response.startsWith("y")) {
+                voteCounter.getAndIncrement()
+                return [(player): true]
+            } else if (response.startsWith("n")) {
+                voteCounter.getAndDecrement()
+                return [(player): false]
+            } else {
+                messagePlayer(player, "What? I didn't catch that.")
+            }
+        }
+    }
 }
