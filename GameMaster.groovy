@@ -107,4 +107,35 @@ abstract class GameMaster {
     def electionResults(ja, nein) {
         messageGroup("The results are: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")
     }
+
+    def isNumberInRange(value, min, max) {
+        if (value.isNumber()) {
+            def num = value as int
+            if (num >= min && num <= max) {
+                return true
+            }
+        }
+        return false
+    }
+
+    def askPresidentDiscard(president, policies) {
+        def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
+        while (!isNumberInRange(response, 1, 3)) {
+            response = questionPlayer(president, "Please choose a number between 1 and 3")
+        }
+        return response as int
+    }
+
+    def askChancellorDiscard(chancellor, policies, vetoEnabled) {
+        def question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
+        if (vetoEnabled) {
+            question += " Note: choose 0 to propose a veto."
+        }
+        def response = questionPlayer(chancellor, question)
+        def min = vetoEnabled ? 0 : 1
+        while (!isNumberInRange(response, min, 2)) {
+            response = questionPlayer(chancellor, "Please choose a number between $min and 2")
+        }
+        return response as int
+    }
 }
