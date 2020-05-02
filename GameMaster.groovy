@@ -104,10 +104,6 @@ abstract class GameMaster {
         }
     }
 
-    def electionResults(ja, nein) {
-        messageGroup("The results are: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")
-    }
-
     def isNumberInRange(value, min, max) {
         if (value.isNumber()) {
             def num = value as int
@@ -137,5 +133,15 @@ abstract class GameMaster {
             response = questionPlayer(chancellor, "Please choose a number between $min and 2")
         }
         return response as int
+    }
+
+    def electionResults(ja, nein, failedBefore) {
+        def isPass = ja.size() > nein.size()
+        def result = isPass ? "passes" : "fails"
+        messageGroup("The election $result: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")
+        if (!isPass) {
+            def afterFailed = failedBefore + 1
+            messageGroup("The failed election marker is now at $afterFailed")
+        }
     }
 }

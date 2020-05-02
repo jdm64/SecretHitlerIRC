@@ -163,7 +163,7 @@ class Game {
                 lastElected = [president, chancellor]
             }
             failedElection = 0
-            messageGroup("The election passes")
+
             if (facEnacted >= 3) {
                 if (roles.get(chancellor) == Role.HITLER) {
                     messageGroup("The fascists win! Hitler has been elected chancellor.")
@@ -194,9 +194,7 @@ class Game {
         } else {
             event.result = "Failed"
             failedElection++
-            if (failedElection < 3) {
-                messageGroup("The election fails, the failed election marker is now at $failedElection")
-            } else {
+            if (failedElection == 3) {
                 topCard()
             }
         }
@@ -206,7 +204,7 @@ class Game {
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
             event.votes = players.toString()[1..-2] + " || @"
-            gm.electionResults(players, [])
+            gm.electionResults(players, [], failedElection)
             return true
         }
 
@@ -244,7 +242,7 @@ class Game {
         event.votes = ja.size() ? ja.toString()[1..-2] : "@"
         event.votes += " || "
         event.votes += nein.size() ? nein.toString()[1..-2] : "@"
-        gm.electionResults(ja, nein)
+        gm.electionResults(ja, nein, failedElection)
 
         return elected.get() > 0
     }
@@ -308,7 +306,7 @@ class Game {
         reshuffle()
 
         def policy = drawPile.remove(0)
-        messageGroup("The election fails, the next policy ($policy) will be automatically enacted.")
+        messageGroup("The next policy ($policy) will be automatically enacted.")
         messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
 
         if (policy == Policy.LIBERAL) {
