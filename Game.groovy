@@ -342,7 +342,7 @@ class Game {
             case 7:
             case 8:
                 if (facEnacted == 2) {
-                    inspect(president)
+                    inspected << gm.inspect(president, players, inspected, roles)
                 } else if (facEnacted == 3) {
                     return specialElection(president)
                 }
@@ -350,7 +350,7 @@ class Game {
             case 9:
             case 10:
                 if (facEnacted == 1 || facEnacted == 2) {
-                    inspect(president)
+                    inspected << gm.inspect(president, players, inspected, roles)
                 } else if (facEnacted == 3) {
                     return specialElection(president)
                 }
@@ -364,20 +364,6 @@ class Game {
         messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
         def next = [drawPile[0], drawPile[1], drawPile[2]]
         messagePlayer(president, "The next three policies in the draw pile are: $next")
-    }
-
-    def inspect(president) {
-        messageGroup("Waiting for President $president to decide whom to inspect.")
-
-        def validPlayers = players - president - inspected
-        def inspectPlayer = askPlayerName(president, "Whom do you wish to inspect? $validPlayers", { player ->
-            return inspected.contains(player) ? "$player has already been inspect once" : null
-        })
-
-        inspected << inspectPlayer
-        messageGroup("President $president to inspect the party membership of $inspectPlayer")
-        def role = roles.get(inspectPlayer) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
-        messagePlayer(president, "$inspectPlayer is a $role")
     }
 
     def specialElection(president) {

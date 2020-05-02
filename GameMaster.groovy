@@ -144,4 +144,18 @@ abstract class GameMaster {
             messageGroup("The failed election marker is now at $afterFailed")
         }
     }
+
+    def inspect(president, players, inspected, roles) {
+        messageGroup("Waiting for President $president to decide whom to inspect.")
+
+        def validPlayers = players - president - inspected
+        def inspectPlayer = askPlayerName(players, president, "Whom do you wish to inspect? $validPlayers", { player ->
+            return inspected.contains(player) ? "$player has already been inspect once" : null
+        })
+
+        def role = roles.get(inspectPlayer) == Role.LIBERAL ? Role.LIBERAL : Role.FASCIST
+        messageGroup("President $president to inspect the party membership of $inspectPlayer")
+        messagePlayer(president, "$inspectPlayer is a $role")
+        return inspectPlayer
+    }
 }
