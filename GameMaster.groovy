@@ -57,6 +57,19 @@ abstract class GameMaster {
         }.join(", ") + " ] (* = incumbent, + = cnh)")
     }
 
+    def askPlayerYesNo(player, question) {
+        while (true) {
+            def response = questionPlayer(player, question).toLowerCase()
+            if (response.startsWith("j") || response.startsWith("y")) {
+                return true
+            } else if (response.startsWith("n")) {
+                return false
+            } else {
+                messagePlayer(player, "What? I didn't catch that.")
+            }
+        }
+    }
+
     def askPlayerName(players, askPlayer, question, invalidName) {
         while (true) {
             def name = questionPlayer(askPlayer, question).trim()
@@ -89,19 +102,13 @@ abstract class GameMaster {
     }
 
     def aproveGovernment(player, president, chancellor, voteCounter) {
-        while (true) {
-            def response = questionPlayer(player, "Do you approve of a government of $president and $chancellor? [Ja, Nein]")
-            response = response.toLowerCase()
-            if (response.startsWith("j") || response.startsWith("y")) {
-                voteCounter.getAndIncrement()
-                return [(player): true]
-            } else if (response.startsWith("n")) {
-                voteCounter.getAndDecrement()
-                return [(player): false]
-            } else {
-                messagePlayer(player, "What? I didn't catch that.")
-            }
+        def response = askPlayerYesNo(player, "Do you approve of a government of $president and $chancellor? [Ja, Nein]")
+        if (response) {
+            voteCounter.getAndIncrement()
+        } else {
+            voteCounter.getAndDecrement()
         }
+        return [(player): response]
     }
 
     def isNumberInRange(value, min, max) {
