@@ -286,18 +286,14 @@ class Game {
     }
 
     def veto(president, chancellor) {
-        messageGroup("Chancellor $chancellor moves to veto this agenda.")
-        def result = questionPlayer(president, "Do you agree to a veto of the current agenda? [Y/N]").toLowerCase()
-        if (result == "y" || result == "yes") {
-            messageGroup("President $president agrees to the veto, the policies are discarded and the failed government marker advances")
+        def result = gm.askVeto(president, chancellor)
+        if (result) {
             failedElection++
-            messageGroup("The failed election marker is now at $failedElection")
             if (failedElection == 3) {
                 topCard()
             }
             return true
         } else {
-            messageGroup("President $president disagrees to the veto, the chancellor must enact a policy.")
             return false
         }
     }

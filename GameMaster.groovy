@@ -170,4 +170,15 @@ abstract class GameMaster {
         messagePlayer(president, "$inspectPlayer is a $role")
         return inspectPlayer
     }
+
+    def askVeto(president, chancellor) {
+        messageGroup("Chancellor $chancellor moves to veto this agenda.")
+        def result = askPlayerYesNo(president, "Do you agree to a veto of the current agenda? [Ja, Nein]")
+        if (result) {
+            messageGroup("President $president agrees to the veto, the policies are discarded and the failed government marker advances")
+        } else {
+            messageGroup("President $president disagrees to the veto, the chancellor must enact a policy.")
+        }
+        return result
+    }
 }
