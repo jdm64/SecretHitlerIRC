@@ -145,6 +145,11 @@ abstract class GameMaster {
         }
     }
 
+    def peek(president, topThree) {
+        messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
+        messagePlayer(president, "The next three policies in the draw pile are: $topThree")
+    }
+
     def inspect(president, players, inspected, roles) {
         messageGroup("Waiting for President $president to decide whom to inspect.")
 

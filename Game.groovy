@@ -336,7 +336,7 @@ class Game {
             case 5:
             case 6:
                 if (facEnacted == 3) {
-                    peek(president)
+                    gm.peek(president, [drawPile[0], drawPile[1], drawPile[2]])
                 }
                 break
             case 7:
@@ -357,13 +357,6 @@ class Game {
                 break
         }
         return false
-    }
-
-    def peek(president) {
-        // President to peek at the top 3
-        messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
-        def next = [drawPile[0], drawPile[1], drawPile[2]]
-        messagePlayer(president, "The next three policies in the draw pile are: $next")
     }
 
     def specialElection(president) {
