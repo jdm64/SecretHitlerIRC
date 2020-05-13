@@ -257,15 +257,14 @@ class Game {
 
     // Returns true if the game is over
     def enactPolicy(president, chancellor, policy) {
-        messageGroup("President $president and Chancellor $chancellor enacted a $policy policy.")
-        messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
         if (policy == Policy.LIBERAL) {
             libEnacted++
         } else if (policy == Policy.FASCIST) {
             facEnacted++
         }
 
-        messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
+        gm.tellEnactPolicy(president, chancellor, policy)
+        gm.tellPolicyResult(drawPile.size(), discardPile.size(), libEnacted, facEnacted)
 
         reshuffle()
         if (policy == Policy.FASCIST && specialAction(president)) {
@@ -302,15 +301,15 @@ class Game {
         reshuffle()
 
         def policy = drawPile.remove(0)
-        messageGroup("The next policy ($policy) will be automatically enacted.")
-        messageGroup("Draw pile size: ${drawPile.size()}, Discard pile size: ${discardPile.size()}.")
-
         if (policy == Policy.LIBERAL) {
             libEnacted++
         } else if (policy == Policy.FASCIST) {
             facEnacted++
         }
-        messageGroup("Score: Liberals $libEnacted, Fascists $facEnacted")
+
+        gm.tellTopCard(policy)
+        gm.tellPolicyResult(drawPile.size(), discardPile.size(), libEnacted, facEnacted)
+
         failedElection = 0
         lastElected.clear()
 

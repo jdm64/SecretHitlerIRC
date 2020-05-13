@@ -152,6 +152,21 @@ abstract class GameMaster {
         }
     }
 
+    def tellEnactPolicy(president, chancellor, policy) {
+        messageGroup("President $president and Chancellor $chancellor enacted a $policy policy.")
+    }
+
+    def tellTopCard(policy) {
+        messageGroup("The next policy ($policy) will be automatically enacted.")
+    }
+
+    def tellPolicyResult(drawSize, discardSize, libEnacted, facEnacted) {
+        def totalSize = drawSize + discardSize
+        def summary = ["Draw": drawSize, "Discard": discardSize, "Total": totalSize]
+        messageGroup("Policy piles: $summary.")
+        messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
+    }
+
     def peek(president, topThree) {
         messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
         messagePlayer(president, "The next three policies in the draw pile are: $topThree")
