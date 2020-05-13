@@ -171,6 +171,14 @@ abstract class GameMaster {
         return inspectPlayer
     }
 
+    def askExecute(president, players) {
+        messageGroup("President $president will now choose a player to execute.")
+        def validPlayers = players - president
+        def killPlayer = askPlayerName(players, president, "Choose a player to execute. $validPlayers", { player -> null })
+        messageGroup("$killPlayer is dead")
+        return killPlayer
+    }
+
     def askVeto(president, chancellor) {
         messageGroup("Chancellor $chancellor moves to veto this agenda.")
         def result = askPlayerYesNo(president, "Do you agree to a veto of the current agenda? [Ja, Nein]")

@@ -371,25 +371,13 @@ class Game {
     }
 
     def execute(president) {
-        messageGroup("President $president will now choose a player to execute.")
-        // President to choose a player to execute
-        def validPlayers = players - president
-        def killPlayer = askPlayerName(president, "Choose a player to execute. $validPlayers", { player -> null })
-
-        if (kill(killPlayer)) {
-            return true
-        }
-        currentPresident = players.indexOf(president)
-        return false
-    }
-
-    def kill(user) {
-        players.remove(user)
-        messageGroup("$user is dead")
-        if (roles.get(user) == Role.HITLER) {
+        def killPlayer = gm.askExecute(president, players)
+        players.remove(killPlayer)
+        if (roles.get(killPlayer) == Role.HITLER) {
             messageGroup("Hitler has been executed. Liberals win!")
             return true
         }
+        currentPresident = players.indexOf(president)
         return false
     }
 
