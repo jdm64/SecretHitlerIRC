@@ -109,13 +109,12 @@ class Game {
 
     def endGame() {
         roles.each {
-            messageGroup("${it.key} was ${it.value}")
+            gm.messageGroup("${it.key} was ${it.value}")
         }
     }
 
     def beginPlay() {
-        messageGroup(" ")
-        messageGroup("Let's start")
+        gm.messageGroup("Let's start")
         while (true) {
             def gameOver = playRound()
             roundEnd()
@@ -125,10 +124,10 @@ class Game {
                 printEvents()
             }
             if (libEnacted == 5) {
-                messageGroup("Liberals win by enacting 5 liberal policies")
+                gm.messageGroup("Liberals win by enacting 5 liberal policies")
                 break
             } else if (facEnacted == 6) {
-                messageGroup("Fascists win by enacting 6 fascist policies")
+                gm.messageGroup("Fascists win by enacting 6 fascist policies")
                 break
             }
         }
@@ -166,7 +165,7 @@ class Game {
 
             if (facEnacted >= 3) {
                 if (roles.get(chancellor) == Role.HITLER) {
-                    messageGroup("The fascists win! Hitler has been elected chancellor.")
+                    gm.messageGroup("The fascists win! Hitler has been elected chancellor.")
                     return true
                 } else {
                     cnhList << chancellor
@@ -277,7 +276,7 @@ class Game {
         if (drawPile.size() >= 3) {
             return
         }
-        messageGroup("Reshuffling the deck")
+        gm.messageGroup("Reshuffling the deck")
         drawPile.addAll(discardPile)
         discardPile.clear()
         Collections.shuffle(drawPile)
@@ -370,29 +369,16 @@ class Game {
         def killPlayer = gm.askExecute(president, players)
         players.remove(killPlayer)
         if (roles.get(killPlayer) == Role.HITLER) {
-            messageGroup("Hitler has been executed. Liberals win!")
+            gm.messageGroup("Hitler has been executed. Liberals win!")
             return true
         }
         currentPresident = players.indexOf(president)
         return false
     }
 
-    def messageGroup(message) {
-        println message
-    }
-
-    def messagePlayer(name, message) {
-        println "$name: $message"
-    }
-
-    def questionPlayer(name, question) {
-        messagePlayer(name, question)
-        return System.console().readLine("What is your response? ")
-    }
-
     def printEvents() {
-        messageGroup(" ")
-        events.toLines().each { messageGroup(it) }
-        messageGroup(" ")
+        gm.messageGroup(" ")
+        events.toLines().each { gm.messageGroup(it) }
+        gm.messageGroup(" ")
     }
 }

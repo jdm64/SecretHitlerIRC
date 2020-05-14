@@ -128,32 +128,4 @@ class IRCGame extends Game {
         super.endGame()
         giveVoice(null)
     }
-
-    def messageGroup(message) {
-        channel.send().message(message)
-    }
-
-    def messagePlayer(name, message) {
-        if (Config.debug) {
-            bot.send().message(Config.debugUser, "$name: $message")
-        } else {
-            bot.send().message(name, message)
-        }
-    }
-
-    def questionPlayer(name, question) {
-        listener.clearLastMessage(name)
-        messagePlayer(name, question)
-        if (Config.debug) {
-            return listener.nextMessageFrom(Config.debugUser)
-        } else {
-            return listener.nextMessageFrom(name)
-        }
-    }
-
-    def printEvents() {
-        events.toLines().each { line ->
-            messageGroup(line)
-        }
-    }
 }
