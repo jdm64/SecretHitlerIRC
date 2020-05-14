@@ -107,12 +107,6 @@ class Game {
         }
     }
 
-    def endGame() {
-        roles.each {
-            gm.messageGroup("${it.key} was ${it.value}")
-        }
-    }
-
     def beginPlay() {
         gm.messageGroup("Let's start")
         while (true) {
@@ -146,6 +140,12 @@ class Game {
     }
 
     def roundEnd() {}
+
+    def printEvents() {
+        gm.messageGroup(" ")
+        events.toLines().each { gm.messageGroup(it) }
+        gm.messageGroup(" ")
+    }
 
     def presidentStart(president) {
         def chancellor = gm.nominateChancellor(president, players, lastElected)
@@ -272,17 +272,6 @@ class Game {
         return false
     }
 
-    def reshuffle() {
-        if (drawPile.size() >= 3) {
-            return
-        }
-        gm.messageGroup("Reshuffling the deck")
-        drawPile.addAll(discardPile)
-        discardPile.clear()
-        Collections.shuffle(drawPile)
-        Collections.shuffle(drawPile) // double shuffle
-    }
-
     def veto(president, chancellor) {
         def result = gm.askVeto(president, chancellor)
         if (result) {
@@ -318,6 +307,17 @@ class Game {
         event.chancellor = " "
         event.result = policy
         event.votes = "Top Card"
+    }
+
+    def reshuffle() {
+        if (drawPile.size() >= 3) {
+            return
+        }
+        gm.messageGroup("Reshuffling the deck")
+        drawPile.addAll(discardPile)
+        discardPile.clear()
+        Collections.shuffle(drawPile)
+        Collections.shuffle(drawPile) // double shuffle
     }
 
     def specialAction(president) {
@@ -376,9 +376,9 @@ class Game {
         return false
     }
 
-    def printEvents() {
-        gm.messageGroup(" ")
-        events.toLines().each { gm.messageGroup(it) }
-        gm.messageGroup(" ")
+    def endGame() {
+        roles.each {
+            gm.messageGroup("${it.key} was ${it.value}")
+        }
     }
 }
