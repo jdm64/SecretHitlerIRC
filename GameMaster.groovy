@@ -27,6 +27,7 @@ abstract class GameMaster {
     }
 
     def tellRoles(roles, hitlerKnows) {
+        messageGroup("Handing out roles....")
         roles.each { player, role ->
             def msg = "You are $role"
             if (role == Role.FASCIST) {
@@ -38,6 +39,7 @@ abstract class GameMaster {
             }
             messagePlayer(player, msg)
         }
+        messageGroup("Let the game begin!")
         messageGroup(" ")
     }
 
