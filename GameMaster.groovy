@@ -215,6 +215,12 @@ abstract class GameMaster {
         return result
     }
 
+    def printResultTable(events) {
+        messageGroup(" ")
+        events.toLines().each { messageGroup(it) }
+        messageGroup(" ")
+    }
+
     def tellVictory(result) {
         switch (result) {
         case GameResult.LIBERAL_WIN_COUNT:

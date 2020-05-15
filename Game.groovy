@@ -134,7 +134,7 @@ class Game {
                 return GameResult.FASCIST_WIN_COUNT
             }
 
-            printEvents()
+            gm.printResultTable(events)
             setNextPresident()
         }
     }
@@ -142,12 +142,6 @@ class Game {
     def playRound(president) {
         gm.tellPlayerOrder(players, president, lastElected, cnhList)
         return presidentStart(president)
-    }
-
-    def printEvents() {
-        gm.messageGroup(" ")
-        events.toLines().each { gm.messageGroup(it) }
-        gm.messageGroup(" ")
     }
 
     def setNextPresident() {
