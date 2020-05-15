@@ -12,12 +12,16 @@ class Game {
     List lastElected
     List inspected
     List cnhList
-    int currentPresident
+    String currentPresident
     int libEnacted
     int facEnacted
     int failedElection
     Events events
     GameMaster gm
+
+    // to handle special elections
+    boolean isSpecialElectStart
+    Tuple specialElectState
 
     def startGame(gameMaster, names) {
         gm = gameMaster
@@ -37,12 +41,13 @@ class Game {
         gm.tellRoles(roles, names.size() < 7)
 
         beginPlay()
+        endGame()
 
         return true
     }
 
     def clearState() {
-        currentPresident = 0
+        currentPresident = null
         libEnacted = 0
         facEnacted = 0
         failedElection = 0
@@ -51,6 +56,8 @@ class Game {
         lastElected = []
         inspected = []
         cnhList = []
+        isSpecialElectStart = false
+        specialElectState = null
         events = new Events()
     }
 
@@ -108,35 +115,32 @@ class Game {
     }
 
     def beginPlay() {
-        gm.messageGroup("Let's start")
+        currentPresident = players[0]
         while (true) {
-            def gameOver = playRound()
-            roundEnd()
-            if (gameOver) {
-                break
-            } else {
-                printEvents()
+            gm.messageGroup("Start Round " + (events.events.size() + 1))
+
+            if (playRound(currentPresident)) {
+                return
             }
+
             if (libEnacted == 5) {
                 gm.messageGroup("Liberals win by enacting 5 liberal policies")
-                break
+                return
             } else if (facEnacted == 6) {
                 gm.messageGroup("Fascists win by enacting 6 fascist policies")
-                break
+                return
             }
+
+            printEvents()
+            setNextPresident()
         }
-        endGame()
     }
 
-    // Return true if the game is over
-    def playRound() {
-        gm.tellPlayerOrder(players, currentPresident, lastElected, cnhList)
-        def president = players[currentPresident]
-        if (presidentStart(president)) {
-            return true
-        }
-        currentPresident = ++currentPresident % players.size()
-        return false
+    def playRound(president) {
+        gm.tellPlayerOrder(players, president, lastElected, cnhList)
+        def result = presidentStart(president)
+        roundEnd()
+        return result
     }
 
     def roundEnd() {}
@@ -145,6 +149,20 @@ class Game {
         gm.messageGroup(" ")
         events.toLines().each { gm.messageGroup(it) }
         gm.messageGroup(" ")
+    }
+
+    def setNextPresident() {
+        if (isSpecialElectStart) {
+            isSpecialElectStart = false
+            return
+        } else if (specialElectState) {
+            currentPresident = specialElectState[0]
+            if (lastElected.isEmpty()) {
+                lastElected = specialElectState[1]
+            }
+            specialElectState = null
+        }
+        currentPresident = players[(players.indexOf(currentPresident) + 1) % players.size()]
     }
 
     def presidentStart(president) {
@@ -333,7 +351,7 @@ class Game {
                 if (facEnacted == 2) {
                     inspected << gm.inspect(president, players, inspected, roles)
                 } else if (facEnacted == 3) {
-                    return specialElection(president)
+                    specialElection(president)
                 }
                 break
             case 9:
@@ -341,7 +359,7 @@ class Game {
                 if (facEnacted == 1 || facEnacted == 2) {
                     inspected << gm.inspect(president, players, inspected, roles)
                 } else if (facEnacted == 3) {
-                    return specialElection(president)
+                    specialElection(president)
                 }
                 break
         }
@@ -349,15 +367,10 @@ class Game {
     }
 
     def specialElection(president) {
-        printEvents()
-        def nextPrez = gm.askSpecialElection(president, players)
-        def backupLastElected = lastElected
+        isSpecialElectStart = true
+        specialElectState = new Tuple(president, lastElected)
         lastElected = []
-        def result = presidentStart(nextPrez)
-        if (lastElected.isEmpty()) {
-            lastElected = backupLastElected
-        }
-        return result
+        currentPresident = gm.askSpecialElection(president, players)
     }
 
     def execute(president) {
@@ -367,7 +380,6 @@ class Game {
             gm.messageGroup("Hitler has been executed. Liberals win!")
             return true
         }
-        currentPresident = players.indexOf(president)
         return false
     }
 
