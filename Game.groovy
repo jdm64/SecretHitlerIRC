@@ -23,8 +23,15 @@ class Game {
     boolean isSpecialElectStart
     Tuple specialElectState
 
-    def startGame(gameMaster, names) {
+    def Game(gameMaster) {
         gm = gameMaster
+    }
+
+    def run() {
+        gm.run(this)
+    }
+
+    def startGame(names) {
         if (names.size() < 5) {
             gm.messageGroup("Not enough players to start, need at least 5.")
             return false

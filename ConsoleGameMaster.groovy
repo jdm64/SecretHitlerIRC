@@ -1,6 +1,11 @@
 
 class ConsoleGameMaster extends GameMaster {
 
+    def run(game) {
+        def players = ["one", "two", "three", "four", "five", "six", "seven"]
+        game.startGame(players)
+    }
+
     def messageGroup(message) {
         println message
     }

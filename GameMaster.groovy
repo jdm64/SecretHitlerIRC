@@ -1,6 +1,8 @@
 
 abstract class GameMaster {
 
+    def abstract run(game)
+
     def abstract messageGroup(message)
 
     def abstract messagePlayer(name, message)
