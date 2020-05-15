@@ -123,6 +123,10 @@ class Game {
                 return
             }
 
+            if (failedElection == 3) {
+                topCard()
+            }
+
             if (libEnacted == 5) {
                 gm.messageGroup("Liberals win by enacting 5 liberal policies")
                 return
@@ -209,9 +213,6 @@ class Game {
         } else {
             event.result = "Failed"
             failedElection++
-            if (failedElection == 3) {
-                topCard()
-            }
         }
         return false
     }
@@ -289,9 +290,6 @@ class Game {
         def result = gm.askVeto(president, chancellor)
         if (result) {
             failedElection++
-            if (failedElection == 3) {
-                topCard()
-            }
             return true
         } else {
             return false
