@@ -1,7 +1,4 @@
-// https://mvnrepository.com/artifact/org.pircbotx/pircbotx
 @Grab(group='org.pircbotx', module='pircbotx', version='2.1')
-// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-//@Grab(group='org.slf4j', module='slf4j-simple', version='1.7.22')
 
 import org.pircbotx.*
 import org.pircbotx.hooks.*
