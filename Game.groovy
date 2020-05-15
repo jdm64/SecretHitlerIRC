@@ -41,7 +41,7 @@ class Game {
         gm.tellRoles(roles, names.size() < 7)
 
         gm.tellVictory(beginPlay())
-        endGame()
+        gm.tellEndgameRoles(roles)
 
         return true
     }
@@ -367,11 +367,5 @@ class Game {
         def killPlayer = gm.askExecute(president, players)
         players.remove(killPlayer)
         return roles.get(killPlayer) == Role.HITLER ? GameResult.HITLER_KILLED : GameResult.NONE
-    }
-
-    def endGame() {
-        roles.each {
-            gm.messageGroup("${it.key} was ${it.value}")
-        }
     }
 }

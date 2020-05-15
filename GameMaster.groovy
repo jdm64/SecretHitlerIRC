@@ -230,4 +230,10 @@ abstract class GameMaster {
             messageGroup("The fascists win! Hitler has been elected chancellor.")
         }
     }
+
+    def tellEndgameRoles(roles) {
+        roles.each {
+            messageGroup("${it.key} was ${it.value}")
+        }
+    }
 }
