@@ -69,7 +69,7 @@ class IRCGameMaster extends GameMaster {
     }
 
     def messagePlayer(name, message) {
-        bot.send().message(Config.debug ? Config.debugUser : name, "$name: $message")
+        bot.send().message(Config.debug ? Config.debugUser : name, message)
     }
 
     def questionPlayer(name, question) {
