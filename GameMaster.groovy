@@ -222,6 +222,7 @@ abstract class GameMaster {
     }
 
     def tellVictory(result) {
+        messageGroup(" ")
         switch (result) {
         case GameResult.LIBERAL_WIN_COUNT:
             messageGroup("Liberals win by enacting 5 liberal policies")
