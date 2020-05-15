@@ -187,9 +187,7 @@ class Game {
             discardPolicy(policies.removeAt(discard - 1))
 
             event.result = "${policies[0]}"
-            if (enactPolicy(president, chancellor, policies[0])) {
-                return true
-            }
+            return enactPolicy(president, chancellor, policies[0])
         } else {
             event.result = "Failed"
             failedElection++
@@ -266,10 +264,7 @@ class Game {
         gm.tellPolicyResult(drawPile.size(), discardPile.size(), libEnacted, facEnacted)
 
         reshuffle()
-        if (policy == Policy.FASCIST && specialAction(president)) {
-            return true
-        }
-        return false
+        return policy == Policy.FASCIST && specialAction(president)
     }
 
     def veto(president, chancellor) {
