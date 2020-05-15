@@ -23,7 +23,7 @@ class IRCGame extends Game {
                 switch (command.trim().toLowerCase()) {
                     case "start":
                         channel = event.channel
-                        def gm = new IRCGameMaster(bot, channel, listener)
+                        def gm = new IRCGameMaster(IRCGame.this)
                         if (Config.debug) {
                             def players = ["one", "two", "three", "four", "five"]
                             startGame(gm, players)
