@@ -40,7 +40,7 @@ class Game {
         gm.tellSetup(roles, drawPile)
         gm.tellRoles(roles, names.size() < 7)
 
-        gm.tellVictory(beginPlay())
+        gm.tellVictory(gameLoop())
         gm.tellEndgameRoles(roles)
 
         return true
@@ -114,10 +114,11 @@ class Game {
         }
     }
 
-    def beginPlay() {
+    def gameLoop() {
         currentPresident = players[0]
         while (true) {
             gm.messageGroup("Start Round " + (events.events.size() + 1))
+            gm.tellPlayerOrder(players, currentPresident, lastElected, cnhList)
 
             def result = playRound(currentPresident)
             if (result != GameResult.NONE) {
@@ -139,11 +140,6 @@ class Game {
         }
     }
 
-    def playRound(president) {
-        gm.tellPlayerOrder(players, president, lastElected, cnhList)
-        return presidentStart(president)
-    }
-
     def setNextPresident() {
         if (isSpecialElectStart) {
             isSpecialElectStart = false
@@ -158,7 +154,7 @@ class Game {
         currentPresident = players[(players.indexOf(currentPresident) + 1) % players.size()]
     }
 
-    def presidentStart(president) {
+    def playRound(president) {
         def chancellor = gm.nominateChancellor(president, players, lastElected)
 
         def event = new Event()
