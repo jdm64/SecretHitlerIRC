@@ -141,12 +141,8 @@ class Game {
 
     def playRound(president) {
         gm.tellPlayerOrder(players, president, lastElected, cnhList)
-        def result = presidentStart(president)
-        roundEnd()
-        return result
+        return presidentStart(president)
     }
-
-    def roundEnd() {}
 
     def printEvents() {
         gm.messageGroup(" ")

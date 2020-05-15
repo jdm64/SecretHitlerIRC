@@ -9,11 +9,9 @@ import org.pircbotx.hooks.events.*
 import org.pircbotx.hooks.types.*
 import java.util.concurrent.*
 
-
 class IRCGame extends Game {
     def bot
     def channel
-    def devoiced
     def listener = new IRCListener()
 
     class IRCListener extends ListenerAdapter {
@@ -65,67 +63,5 @@ class IRCGame extends Game {
         Thread.start {
             bot.startBot()
         }
-    }
-
-    def giveVoice() {
-        giveVoice(null)
-    }
-
-    def giveVoice(names) {
-        if (Config.voicing) {
-            channel.users.each { user ->
-                if (!user.getNick().equals(Config.botName)) {
-                    if (names == null || names.contains(user.getNick())) {
-                        channel.send().voice(user)
-                    }
-                }
-            }
-        }
-    }
-
-    def takeVoice(names) {
-        if (Config.voicing) {
-            if (Config.debug) {
-                names << Config.debugUser
-            }
-            channel.users.each { user ->
-                if (names?.contains(user.getNick())) {
-                    channel.send().deVoice(user)
-                }
-            }
-            devoiced = names
-        }
-    }
-
-    def startGame(names) {
-        if (Config.voicing) {
-            channel.send().setMode("+m")
-        }
-        giveVoice()
-        super.startGame(names)
-    }
-
-    def roundEnd() {
-        if (devoiced) {
-            giveVoice(devoiced)
-        }
-    }
-
-    def electGovernment(event, president, chancellor) {
-        def elected = super.electGovernment(event, president, chancellor)
-        if (elected) {
-            takeVoice([president, chancellor])
-        }
-        return elected
-    }
-
-    def kill(user) {
-        takeVoice([user])
-        super.kill(user)
-    }
-
-    def endGame() {
-        super.endGame()
-        giveVoice(null)
     }
 }

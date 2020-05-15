@@ -4,7 +4,6 @@ class Config {
         "console": false,
         "debug": false,
         "autoelect": false,
-        "voicing": false,
         "minTable": false,
         "rebalance": true,
         "server": "skynet.parasoft.com",
