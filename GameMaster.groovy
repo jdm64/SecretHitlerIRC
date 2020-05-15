@@ -21,6 +21,7 @@ abstract class GameMaster {
         numFas = vals.count(Role.FASCIST)
         def numHit = vals.count(Role.HITLER)
         messageGroup("Players: $numLib $Role.LIBERAL, $numFas $Role.FASCIST and $numHit $Role.HITLER")
+        messageGroup(" ")
     }
 
     def tellRoles(roles, hitlerKnows) {
@@ -35,6 +36,7 @@ abstract class GameMaster {
             }
             messagePlayer(player, msg)
         }
+        messageGroup(" ")
     }
 
     def tellPlayerOrder(players, currentPresident, lastElected, cnhList) {
