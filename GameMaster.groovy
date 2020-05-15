@@ -214,4 +214,20 @@ abstract class GameMaster {
         }
         return result
     }
+
+    def tellVictory(result) {
+        switch (result) {
+        case GameResult.LIBERAL_WIN_COUNT:
+            messageGroup("Liberals win by enacting 5 liberal policies")
+            return
+        case GameResult.FASCIST_WIN_COUNT:
+            messageGroup("Fascists win by enacting 6 fascist policies")
+            return
+        case GameResult.HITLER_KILLED:
+            messageGroup("Hitler has been executed. Liberals win!")
+            return
+        case GameResult.HITLER_ELECTED:
+            messageGroup("The fascists win! Hitler has been elected chancellor.")
+        }
+    }
 }

@@ -40,7 +40,7 @@ class Game {
         gm.tellSetup(roles, drawPile)
         gm.tellRoles(roles, names.size() < 7)
 
-        beginPlay()
+        gm.tellVictory(beginPlay())
         endGame()
 
         return true
@@ -119,8 +119,9 @@ class Game {
         while (true) {
             gm.messageGroup("Start Round " + (events.events.size() + 1))
 
-            if (playRound(currentPresident)) {
-                return
+            def result = playRound(currentPresident)
+            if (result != GameResult.NONE) {
+                return result
             }
 
             if (failedElection == 3) {
@@ -128,11 +129,9 @@ class Game {
             }
 
             if (libEnacted == 5) {
-                gm.messageGroup("Liberals win by enacting 5 liberal policies")
-                return
+                return GameResult.LIBERAL_WIN_COUNT
             } else if (facEnacted == 6) {
-                gm.messageGroup("Fascists win by enacting 6 fascist policies")
-                return
+                return GameResult.FASCIST_WIN_COUNT
             }
 
             printEvents()
@@ -187,8 +186,7 @@ class Game {
 
             if (facEnacted >= 3) {
                 if (roles.get(chancellor) == Role.HITLER) {
-                    gm.messageGroup("The fascists win! Hitler has been elected chancellor.")
-                    return true
+                    return GameResult.HITLER_ELECTED
                 } else {
                     cnhList << chancellor
                 }
@@ -202,7 +200,7 @@ class Game {
                 // Move to veto
                 if (veto(president, chancellor)) {
                     event.result = "Veto"
-                    return false
+                    return GameResult.NONE
                 }
                 discard = gm.askChancellorDiscard(chancellor, policies, false)
             }
@@ -214,7 +212,7 @@ class Game {
             event.result = "Failed"
             failedElection++
         }
-        return false
+        return GameResult.NONE
     }
 
     def electGovernment(event, president, chancellor) {
@@ -271,7 +269,6 @@ class Game {
         discardPile << policy
     }
 
-    // Returns true if the game is over
     def enactPolicy(president, chancellor, policy) {
         if (policy == Policy.LIBERAL) {
             libEnacted++
@@ -283,7 +280,7 @@ class Game {
         gm.tellPolicyResult(drawPile.size(), discardPile.size(), libEnacted, facEnacted)
 
         reshuffle()
-        return policy == Policy.FASCIST && specialAction(president)
+        return policy == Policy.FASCIST ? specialAction(president) : GameResult.NONE
     }
 
     def veto(president, chancellor) {
@@ -333,10 +330,9 @@ class Game {
 
     def specialAction(president) {
         if (facEnacted == 4 || facEnacted == 5) {
-            if (execute(president)) {
-                return true
-            }
+            return execute(president)
         }
+
         switch (numPlayers) {
             case 5:
             case 6:
@@ -361,7 +357,7 @@ class Game {
                 }
                 break
         }
-        return false
+        return GameResult.NONE
     }
 
     def specialElection(president) {
@@ -374,11 +370,7 @@ class Game {
     def execute(president) {
         def killPlayer = gm.askExecute(president, players)
         players.remove(killPlayer)
-        if (roles.get(killPlayer) == Role.HITLER) {
-            gm.messageGroup("Hitler has been executed. Liberals win!")
-            return true
-        }
-        return false
+        return roles.get(killPlayer) == Role.HITLER ? GameResult.HITLER_KILLED : GameResult.NONE
     }
 
     def endGame() {
