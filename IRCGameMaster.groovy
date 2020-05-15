@@ -56,7 +56,7 @@ class IRCGameMaster extends GameMaster {
             .addServer(Config.server)
             .addListener(listener)
             .addAutoJoinChannel(Config.channel)
-            .setMessageDelay(10)
+            .setMessageDelay(1)
             .buildConfiguration()
         bot = new PircBotX(config)
         Thread.start {
