@@ -210,7 +210,7 @@ class Game {
 
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
-            event.votes = players.toString()[1..-2] + " || "
+            event.votes = players.join(" ") + " \u2588"
             gm.electionResults(players, [], failedElection)
             return true
         }
@@ -246,9 +246,7 @@ class Game {
             }
         }
 
-        event.votes = ja.size() ? ja.toString()[1..-2] : ""
-        event.votes += " || "
-        event.votes += nein.size() ? nein.toString()[1..-2] : ""
+        event.votes = ja.join(" ") + " \u2588 " + nein.join(" ")
         gm.electionResults(ja, nein, failedElection)
 
         return elected.get() > 0
