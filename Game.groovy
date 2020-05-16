@@ -170,13 +170,6 @@ class Game {
         events.addEvent(event)
 
         if (electGovernment(event, president, chancellor)) {
-            if (players.size() < 6) {
-                lastElected = [chancellor]
-            } else {
-                lastElected = [president, chancellor]
-            }
-            failedElection = 0
-
             if (facEnacted >= 3) {
                 if (roles.get(chancellor) == Role.HITLER) {
                     return GameResult.HITLER_ELECTED
@@ -184,6 +177,13 @@ class Game {
                     cnhList << chancellor
                 }
             }
+
+            if (players.size() < 6) {
+                lastElected = [chancellor]
+            } else {
+                lastElected = [president, chancellor]
+            }
+            failedElection = 0
 
             def policies = drawPolicies()
             def discard = gm.askPresidentDiscard(president, policies)
