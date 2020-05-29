@@ -18,6 +18,7 @@ class Game {
     int failedElection
     Events events
     GameMaster gm
+    SecureRandom rand = new SecureRandom()
 
     // to handle special elections
     boolean isSpecialElectStart
@@ -29,6 +30,11 @@ class Game {
 
     def run() {
         gm.run(this)
+    }
+
+    def shuffle(list) {
+        Collections.shuffle(list, rand)
+        Collections.shuffle(list, rand)
     }
 
     def startGame(names) {
@@ -89,15 +95,13 @@ class Game {
             drawPile << Policy.LIBERAL
         })
 
-        Collections.shuffle(drawPile)
-        Collections.shuffle(drawPile) // double shuffle
+        shuffle(drawPile)
     }
 
     def assignRoles(names) {
         numPlayers = names.size()
         def namesCopy = new ArrayList(names)
-        Collections.shuffle(namesCopy)
-        Collections.shuffle(namesCopy) // double shuffle
+        shuffle(namesCopy)
         players = new ArrayList(namesCopy)
 
         roles = [:]
@@ -315,8 +319,7 @@ class Game {
         gm.messageGroup("Reshuffling the deck")
         drawPile.addAll(discardPile)
         discardPile.clear()
-        Collections.shuffle(drawPile)
-        Collections.shuffle(drawPile) // double shuffle
+        shuffle(drawPile)
     }
 
     def specialAction(president) {
