@@ -1,6 +1,7 @@
 
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
+import java.security.SecureRandom
 
 class Game {
 
@@ -250,7 +251,12 @@ class Game {
             }
         }
 
-        event.votes = ja.join(" ") + " \u2588 " + nein.join(" ")
+        def voteLine = []
+        voteLine.addAll(ja)
+        voteLine.add("\u2588")
+        voteLine.addAll(nein)
+
+        event.votes = voteLine.join(" ")
         gm.electionResults(ja, nein, failedElection)
 
         return elected.get() > 0
