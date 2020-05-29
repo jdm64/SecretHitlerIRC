@@ -148,7 +148,10 @@ abstract class GameMaster {
         return response as int
     }
 
-    def electionResults(ja, nein, failedBefore) {
+    def electionResults(ja, nein, failedBefore, lastVoter) {
+        if (Config.showLastVoter) {
+            messageGroup("The last person to vote was: $lastVoter")
+        }
         def isPass = ja.size() > nein.size()
         def result = isPass ? "passes" : "fails"
         messageGroup("The election $result: ${ja.size()}/${nein.size()} Ja$ja Nein$nein")

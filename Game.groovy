@@ -216,7 +216,7 @@ class Game {
     def electGovernment(event, president, chancellor) {
         if (Config.autoelect) {
             event.votes = players.join(" ") + " \u2588"
-            gm.electionResults(players, [], failedElection)
+            gm.electionResults(players, [], failedElection, "<NONE>")
             return true
         }
 
@@ -230,10 +230,12 @@ class Game {
         def votingRecord = new ConcurrentHashMap()
         def elected = new AtomicInteger()
         def futures = []
+        def lastVoter
         try {
             players.each { player ->
                 futures << threadPool.submit({
                     votingRecord << gm.aproveGovernment(player, president, chancellor, elected)
+                    lastVoter = player
                 } as Callable)
             }
         } finally {
@@ -257,7 +259,7 @@ class Game {
         voteLine.addAll(nein)
 
         event.votes = voteLine.join(" ")
-        gm.electionResults(ja, nein, failedElection)
+        gm.electionResults(ja, nein, failedElection, lastVoter)
 
         return elected.get() > 0
     }

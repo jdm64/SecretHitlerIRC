@@ -6,6 +6,7 @@ class Config {
         "autoelect": false,
         "minTable": false,
         "rebalance": true,
+        "showLastVoter": true,
         "server": "skynet.parasoft.com",
         "debugUser": "dan",
         "botName": "shitler",
