@@ -277,10 +277,11 @@ class Game {
             facEnacted++
         }
 
+        reshuffle()
+
         gm.tellEnactPolicy(president, chancellor, policy)
         gm.tellPolicyResult(drawPile.size(), discardPile.size(), libEnacted, facEnacted)
 
-        reshuffle()
         return policy == Policy.FASCIST ? specialAction(president) : GameResult.NONE
     }
 
