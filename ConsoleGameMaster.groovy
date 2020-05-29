@@ -11,11 +11,12 @@ class ConsoleGameMaster extends GameMaster {
     }
 
     def messagePlayer(name, message) {
-        println "$name: $message"
+        println message
     }
 
     def questionPlayer(name, question) {
         messagePlayer(name, question)
-        return System.console().readLine(">>> ")
+        Thread.currentThread().sleep(100)
+        return System.console().readLine("$name >>> ")
     }
 }
