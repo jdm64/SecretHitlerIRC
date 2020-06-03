@@ -44,7 +44,7 @@ abstract class GameMaster {
     }
 
     def tellPlayerOrder(players, currentPresident, lastElected, cnhList) {
-        messageGroup("Players [ " + players.withIndex().collect { player, index ->
+        messageGroup("Players [ " + players.collect { player ->
             def str = ""
             if (lastElected.contains(player)) {
                 str += "*"
@@ -54,7 +54,7 @@ abstract class GameMaster {
                 str += "+"
             }
 
-            if (index == currentPresident) {
+            if (player == currentPresident) {
                 str += "$ColorCode.BOLD$player$ColorCode.NORMAL"
             } else {
                 str += player
