@@ -5,14 +5,14 @@ import java.security.SecureRandom
 
 class Game {
 
-    Map roles
-    List players
+    Map<String,Role> roles
+    List<String> players
     int numPlayers
-    List drawPile
-    List discardPile
-    List lastElected
-    List inspected
-    List cnhList
+    List<Policy> drawPile
+    List<Policy> discardPile
+    List<String> lastElected
+    List<String> inspected
+    List<String> cnhList
     String currentPresident
     int libEnacted
     int facEnacted
@@ -26,7 +26,7 @@ class Game {
     boolean isSpecialElectStart
     Tuple specialElectState
 
-    def Game(gameMaster) {
+    def Game(GameMaster gameMaster) {
         gm = gameMaster
     }
 
@@ -34,12 +34,12 @@ class Game {
         gm.run(this)
     }
 
-    def shuffle(list) {
+    def shuffle(List list) {
         Collections.shuffle(list, rand)
         Collections.shuffle(list, rand)
     }
 
-    def startGame(names) {
+    def startGame(Collection<String> names) {
         if (names.size() < 5) {
             gm.messageGroup("Not enough players to start, need at least 5.")
             return false
@@ -100,11 +100,11 @@ class Game {
         shuffle(drawPile)
     }
 
-    def assignRoles(names) {
+    def assignRoles(Collection<String> names) {
         numPlayers = names.size()
-        def namesCopy = new ArrayList(names)
+        def namesCopy = new ArrayList<String>(names)
         shuffle(namesCopy)
-        players = new ArrayList(namesCopy)
+        players = new ArrayList<String>(namesCopy)
         shuffle(players)
 
         roles = [:]
@@ -128,7 +128,7 @@ class Game {
         }
     }
 
-    def gameLoop() {
+    GameResult gameLoop() {
         currentPresident = players[0]
         while (true) {
             gm.messageGroup("Start Round " + (events.events.size() + 1))
@@ -168,7 +168,7 @@ class Game {
         currentPresident = players[(players.indexOf(currentPresident) + 1) % players.size()]
     }
 
-    def playRound(president) {
+    GameResult playRound(String president) {
         def chancellor = gm.nominateChancellor(president, players, lastElected)
 
         def event = new Event()
@@ -215,7 +215,7 @@ class Game {
         return GameResult.NONE
     }
 
-    def electGovernment(event, president, chancellor) {
+    def electGovernment(Event event, String president, String chancellor) {
         if (Config.autoelect) {
             event.votes = players.join(" ") + " \u2588"
             gm.electionResults(players, [], failedElection, "<NONE>")
@@ -229,7 +229,7 @@ class Game {
             threadPool = Executors.newFixedThreadPool(players.size())
         }
 
-        def votingRecord = new ConcurrentHashMap()
+        def votingRecord = new ConcurrentHashMap<String,Boolean>()
         def elected = new AtomicInteger()
         def futures = []
         def lastVoter
@@ -271,15 +271,15 @@ class Game {
         return elected.get() > 0
     }
 
-    def drawPolicies() {
+    List<Policy> drawPolicies() {
         return [drawPile.remove(0), drawPile.remove(0), drawPile.remove(0)]
     }
 
-    def discardPolicy(policy) {
+    def discardPolicy(Policy policy) {
         discardPile << policy
     }
 
-    def enactPolicy(president, chancellor, policy) {
+    GameResult enactPolicy(String president, String chancellor, Policy policy) {
         if (policy == Policy.LIBERAL) {
             libEnacted++
         } else if (policy == Policy.FASCIST) {
@@ -294,7 +294,7 @@ class Game {
         return policy == Policy.FASCIST ? specialAction(president) : GameResult.NONE
     }
 
-    def veto(president, chancellor) {
+    def veto(String president, String chancellor) {
         def result = gm.askVeto(president, chancellor)
         if (result) {
             failedElection++
@@ -338,7 +338,7 @@ class Game {
         shuffle(drawPile)
     }
 
-    def specialAction(president) {
+    GameResult specialAction(String president) {
         if (facEnacted == 4 || facEnacted == 5) {
             return execute(president)
         }
@@ -370,14 +370,14 @@ class Game {
         return GameResult.NONE
     }
 
-    def specialElection(president) {
+    def specialElection(String president) {
         isSpecialElectStart = true
         specialElectState = new Tuple(president, lastElected)
         lastElected = []
         currentPresident = gm.askSpecialElection(president, players)
     }
 
-    def execute(president) {
+    GameResult execute(String president) {
         def killPlayer = gm.askExecute(president, players)
         players.remove(killPlayer)
         return roles.get(killPlayer) == Role.HITLER ? GameResult.HITLER_KILLED : GameResult.NONE

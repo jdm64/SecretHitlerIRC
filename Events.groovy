@@ -1,20 +1,20 @@
 
 class Events {
-    def events = []
+    List<Event> events = []
 
-    def addEvent(e) {
+    def addEvent(Event e) {
         events << e
     }
 
-    def dash(count) {
+    def dash(int count) {
         return "-" * count
     }
 
-    def divider(columns) {
+    def divider(Map<String,Integer> columns) {
         return "+" + columns.collect{ it -> dash(it.value) }.join("+") + "+"
     }
 
-    def header(columns) {
+    def header(Map<String,Integer> columns) {
         return "|" + columns.collect{ it -> it.key.center(it.value) }.join("|") + "|"
     }
 

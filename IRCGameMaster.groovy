@@ -8,13 +8,13 @@ import java.util.concurrent.*
 
 class IRCGameMaster extends GameMaster {
 
-    def game
-    def bot
-    def channel
-    def listener = new IRCListener()
+    Game game
+    PircBotX bot
+    Channel channel
+    IRCListener listener = new IRCListener()
 
     class IRCListener extends ListenerAdapter {
-        def lastMessage = new ConcurrentHashMap()
+        def lastMessage = new ConcurrentHashMap<String,String>()
 
         public void onMessage(MessageEvent event) {
             if (event.message.startsWith(Config.botName + ":")) {
@@ -39,11 +39,11 @@ class IRCGameMaster extends GameMaster {
             lastMessage << [(event.user.getNick()): event.message]
         }
 
-        def clearLastMessage(name) {
+        def clearLastMessage(String name) {
             lastMessage.remove(name)
         }
 
-        def nextMessageFrom(name) {
+        def nextMessageFrom(String name) {
             while (!lastMessage.containsKey(name)) {
                 Thread.currentThread().sleep(500)
             }
@@ -51,7 +51,7 @@ class IRCGameMaster extends GameMaster {
         }
     }
 
-    def run(gameInstance) {
+    def run(Game gameInstance) {
         game = gameInstance
         def config = new Configuration.Builder()
             .setName(Config.botName)
@@ -66,15 +66,15 @@ class IRCGameMaster extends GameMaster {
         }
     }
 
-    def messageGroup(message) {
+    def messageGroup(String message) {
         channel.send().message(message)
     }
 
-    def messagePlayer(name, message) {
+    def messagePlayer(String name, String message) {
         bot.send().message(Config.debug ? Config.debugUser : name, message)
     }
 
-    def questionPlayer(name, question) {
+    String questionPlayer(String name, String question) {
         listener.clearLastMessage(name)
         messagePlayer(name, question)
         return listener.nextMessageFrom(Config.debug ? Config.debugUser : name)

@@ -1,15 +1,17 @@
 
+import java.util.concurrent.atomic.*
+
 abstract class GameMaster {
 
-    def abstract run(game)
+    def abstract run(Game game)
 
-    def abstract messageGroup(message)
+    def abstract messageGroup(String message)
 
-    def abstract messagePlayer(name, message)
+    def abstract messagePlayer(String name, String message)
 
-    def abstract questionPlayer(name, question)
+    abstract String questionPlayer(String name, String question)
 
-    def tellSetup(roles, drawPile) {
+    def tellSetup(Map<String,Role> roles, List<Policy> drawPile) {
         if (Config.rebalance) {
             messageGroup("Rebalanced rules enabled")
         }
@@ -26,7 +28,7 @@ abstract class GameMaster {
         messageGroup(" ")
     }
 
-    def tellRoles(roles, hitlerKnows) {
+    def tellRoles(Map<String,Role> roles, boolean hitlerKnows) {
         messageGroup("Handing out roles....")
         roles.each { player, role ->
             def msg = "You are $role"
@@ -43,7 +45,7 @@ abstract class GameMaster {
         messageGroup(" ")
     }
 
-    def tellPlayerOrder(players, currentPresident, lastElected, cnhList) {
+    def tellPlayerOrder(List<String> players, String currentPresident, List<String> lastElected, List<String> cnhList) {
         messageGroup("Players [ " + players.collect { player ->
             def str = ""
             if (lastElected.contains(player)) {
@@ -63,7 +65,7 @@ abstract class GameMaster {
         }.join(", ") + " ] (* = incumbent, + = cnh)")
     }
 
-    def askPlayerYesNo(player, question) {
+    Boolean askPlayerYesNo(String player, String question) {
         while (true) {
             def response = questionPlayer(player, question).toLowerCase()
             if (response.startsWith("j") || response.startsWith("y")) {
@@ -76,7 +78,7 @@ abstract class GameMaster {
         }
     }
 
-    def askPlayerName(players, askPlayer, question, invalidName) {
+    def askPlayerName(List<String> players, String askPlayer, String question, Closure<String> invalidName) {
         while (true) {
             def name = questionPlayer(askPlayer, question).trim()
             if (!players.contains(name)) {
@@ -94,7 +96,7 @@ abstract class GameMaster {
         }
     }
 
-    def nominateChancellor(president, players, lastElected) {
+    String nominateChancellor(String president, List<String> players, List<String> lastElected) {
         messageGroup("Waiting for president $president to nominate a chancellor")
 
         def valid = players - president - lastElected
@@ -107,7 +109,7 @@ abstract class GameMaster {
         return chancellor
     }
 
-    def aproveGovernment(player, president, chancellor, voteCounter) {
+    Map<String,Boolean> aproveGovernment(String player, String president, String chancellor, AtomicInteger voteCounter) {
         def response = askPlayerYesNo(player, "Do you approve of a government of $president and $chancellor? [Ja, Nein]")
         if (response) {
             voteCounter.getAndIncrement()
@@ -117,7 +119,7 @@ abstract class GameMaster {
         return [(player): response]
     }
 
-    def isNumberInRange(value, min, max) {
+    def isNumberInRange(String value, int min, int max) {
         if (value.isNumber()) {
             def num = value as int
             if (num >= min && num <= max) {
@@ -127,7 +129,7 @@ abstract class GameMaster {
         return false
     }
 
-    def askPresidentDiscard(president, policies) {
+    int askPresidentDiscard(String president, List<Policy> policies) {
         def response = questionPlayer(president, "Choose a policy to DISCARD from $policies [1,2,3]")
         while (!isNumberInRange(response, 1, 3)) {
             response = questionPlayer(president, "Please choose a number between 1 and 3")
@@ -135,7 +137,7 @@ abstract class GameMaster {
         return response as int
     }
 
-    def askChancellorDiscard(chancellor, policies, vetoEnabled) {
+    int askChancellorDiscard(String chancellor, List<Policy> policies, boolean vetoEnabled) {
         def question = "Choose a policy to DISCARD (the other will be enacted) from $policies [1,2]."
         if (vetoEnabled) {
             question += " Note: choose 0 to propose a veto."
@@ -148,7 +150,7 @@ abstract class GameMaster {
         return response as int
     }
 
-    def electionResults(ja, nein, failedBefore, lastVoter) {
+    def electionResults(List<String> ja, List<String> nein, int failedBefore, lastVoter) {
         if (Config.showLastVoter) {
             messageGroup("The last person to vote was: $lastVoter")
         }
@@ -161,27 +163,27 @@ abstract class GameMaster {
         }
     }
 
-    def tellEnactPolicy(president, chancellor, policy) {
+    def tellEnactPolicy(String president, String chancellor, Policy policy) {
         messageGroup("President $president and Chancellor $chancellor enacted a $policy policy.")
     }
 
-    def tellTopCard(policy) {
+    def tellTopCard(Policy policy) {
         messageGroup("The next policy ($policy) will be automatically enacted.")
     }
 
-    def tellPolicyResult(drawSize, discardSize, libEnacted, facEnacted) {
+    def tellPolicyResult(int drawSize, int discardSize, int libEnacted, int facEnacted) {
         def totalSize = drawSize + discardSize
         def summary = ["Draw": drawSize, "Discard": discardSize, "Total": totalSize]
         messageGroup("Policy piles: $summary.")
         messageGroup("Score: ${Policy.LIBERAL} $libEnacted/5; ${Policy.FASCIST} $facEnacted/6")
     }
 
-    def peek(president, topThree) {
+    def peek(String president, List<Policy> topThree) {
         messageGroup("President $president is peeking at the next 3 policies on the draw pile.")
         messagePlayer(president, "The next three policies in the draw pile are: $topThree")
     }
 
-    def inspect(president, players, inspected, roles) {
+    def inspect(String president, List<String> players, List<String> inspected, Map<String,Role> roles) {
         messageGroup("Waiting for President $president to decide whom to inspect.")
 
         def validPlayers = players - president - inspected
@@ -195,7 +197,7 @@ abstract class GameMaster {
         return inspectPlayer
     }
 
-    def askSpecialElection(president, players) {
+    def askSpecialElection(String president, List<String> players) {
         messageGroup("Special Election. Waiting for President $president to nominate the next president.")
         def validPlayers = players - president
         def nextPrez = askPlayerName(players, president, "Whom do you wish to nominate as the next president? $validPlayers", { player -> null })
@@ -203,7 +205,7 @@ abstract class GameMaster {
         return nextPrez
     }
 
-    def askExecute(president, players) {
+    def askExecute(String president, List<String> players) {
         messageGroup("President $president will now choose a player to execute.")
         def validPlayers = players - president
         def killPlayer = askPlayerName(players, president, "Choose a player to execute. $validPlayers", { player -> null })
@@ -211,7 +213,7 @@ abstract class GameMaster {
         return killPlayer
     }
 
-    def askVeto(president, chancellor) {
+    def askVeto(String president, String chancellor) {
         messageGroup("Chancellor $chancellor moves to veto this agenda.")
         def result = askPlayerYesNo(president, "Do you agree to a veto of the current agenda? [Ja, Nein]")
         if (result) {
@@ -222,13 +224,13 @@ abstract class GameMaster {
         return result
     }
 
-    def printResultTable(events) {
+    def printResultTable(Events events) {
         messageGroup(" ")
-        events.toLines().each { messageGroup(it) }
+        events.toLines().each { String it -> messageGroup(it) }
         messageGroup(" ")
     }
 
-    def tellVictory(result) {
+    def tellVictory(GameResult result) {
         messageGroup(" ")
         switch (result) {
         case GameResult.LIBERAL_WIN_COUNT:
@@ -245,7 +247,7 @@ abstract class GameMaster {
         }
     }
 
-    def tellEndgameRoles(roles) {
+    def tellEndgameRoles(Map<String,Role> roles) {
         roles.each {
             messageGroup("${it.key} was ${it.value}")
         }
