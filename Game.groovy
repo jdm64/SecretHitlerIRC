@@ -105,6 +105,7 @@ class Game {
         def namesCopy = new ArrayList(names)
         shuffle(namesCopy)
         players = new ArrayList(namesCopy)
+        shuffle(players)
 
         roles = [:]
         roles << [(namesCopy.pop()): Role.HITLER]
