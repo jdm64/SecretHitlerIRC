@@ -20,6 +20,7 @@ class Game {
     Events events
     GameMaster gm
     SecureRandom rand = new SecureRandom()
+    ConcurrentSkipListSet toVote = new ConcurrentSkipListSet<String>()
 
     // to handle special elections
     boolean isSpecialElectStart
@@ -231,10 +232,15 @@ class Game {
         def elected = new AtomicInteger()
         def futures = []
         def lastVoter
+
+        toVote.clear()
+        toVote.addAll(players)
+
         try {
             players.each { player ->
                 futures << threadPool.submit({
                     votingRecord << gm.aproveGovernment(player, president, chancellor, elected)
+                    toVote.remove(player)
                     lastVoter = player
                 } as Callable)
             }

@@ -29,6 +29,8 @@ class IRCGameMaster extends GameMaster {
                             game.startGame(channel.usersNicks - Config.botName)
                         }
                         break;
+                    case "tovote":
+                        game.printWaitingVoters()
                 }
             }
         }
