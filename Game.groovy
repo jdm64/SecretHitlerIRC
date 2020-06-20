@@ -93,6 +93,13 @@ class Game {
         if (Config.rebalance && numPlayers == 6) {
             drawPile.remove(0)
             facEnacted = 1
+
+            def event = new Event()
+            events.addEvent(event)
+            event.president = " "
+            event.chancellor = " "
+            event.result = Policy.FASCIST
+            event.votes = "Rebalance"
         }
 
         1.upto(6, {
@@ -131,6 +138,13 @@ class Game {
 
     GameResult gameLoop() {
         currentPresident = players[0]
+
+        if (Config.rebalance && numPlayers == 6) {
+            gm.messageGroup("Start Round 1")
+            gm.tellPolicyResult(drawPile.size(), discardPile.size(), libEnacted, facEnacted)
+            gm.printResultTable(events)
+        }
+
         while (true) {
             gm.messageGroup("Start Round " + (events.events.size() + 1))
             gm.tellPlayerOrder(players, currentPresident, lastElected, cnhList)
