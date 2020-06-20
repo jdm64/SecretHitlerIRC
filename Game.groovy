@@ -48,7 +48,8 @@ class Game {
             return false
         }
 
-        clearState()
+
+        clearState(names.size())
         setupDeck()
         assignRoles(names)
 
@@ -61,7 +62,8 @@ class Game {
         return true
     }
 
-    def clearState() {
+    def clearState(int playerCount) {
+        numPlayers = playerCount
         currentPresident = null
         libEnacted = 0
         facEnacted = 0
@@ -101,7 +103,6 @@ class Game {
     }
 
     def assignRoles(Collection<String> names) {
-        numPlayers = names.size()
         def namesCopy = new ArrayList<String>(names)
         shuffle(namesCopy)
         players = new ArrayList<String>(namesCopy)
